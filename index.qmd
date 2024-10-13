@@ -1,5 +1,12 @@
 ---
 title: "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia"
+author: "Team: Abang Smith"
+date: "October 13, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
 ---
 
 ## 1. Motivation
@@ -13,6 +20,30 @@ This project aims to explore the spatial relationship between income inequality,
 Despite Malaysia’s advancements in education, gaps in school completion rates persist across regions. One significant factor contributing to this is income inequality. Our project aims to answer the question: How does income inequality impact school completion rates across different regions of Malaysia? Additionally, we will investigate how other factors, such as regional crime rates, may interact with these variables to further affect educational outcomes.
 
 ## 3. Related Work
+
+### 3.1 Stimulating Economic Growth, Improving Quality of Life & Enhancing Youth Involvement, Proceedings of International Conference on Contemporary Economic Issues 2014, Kuala Lumpur: Malaysia.
+
+This paper has shed some light on the relationship between poverty, education and income\
+inequality. While overall poverty incidence is low, pockets of poverty remains particularly\
+among those living in the rural areas and the Bumiputeras. The incidence of poverty declines\
+with the level of education attained by the head of households. This negative correlation\
+between education and poverty is consistent with the prediction and this highlights the\
+important role played by education, especially at tertiary level and higher in reducing poverty\
+While level of poverty declines with education, income inequality increases with education.\
+There is an increase in average income from group to group with more and more members\
+having higher education but their respective income inequalities are not as clear cut. In other\
+words, there exist significant differences in income inequality among sub-groups but with no\
+clear pattern.
+
+[Source](https://www.researchgate.net/profile/Hooi-Hooi-Lean/publication/274376082_Lean_HH_Lim_ES_Khoo_SL_Mohd_S_2014_Stimulating_Economic_Growth_Improving_Quality_of_Life_Enhancing_Youth_Involvement_Proceedings_of_International_Conference_on_Contemporary_Economic_Issues_2014_Kuala_/links/551cc2700cf2909047bcad80/Lean-HH-Lim-ES-Khoo-SL-Mohd-S-2014-Stimulating-Economic-Growth-Improving-Quality-of-Life-Enhancing-Youth-Involvement-Proceedings-of-International-Conference-on-Contemporary-Economic-Issue.pdf#page=117)
+
+### 3.2 The Impact of Economic Growth, Education Level, and Inflation Rate on Income Inequality in Malaysia
+
+This is an article about income inequality in Malaysia. It discusses the relationship between income inequality and economic growth, education level, and inflation rate. The Gini coefficient is used to measure income inequality. A high Gini coefficient indicates a high level of income inequality. Economic growth in wealthy countries can increase income inequality. However, income inequality in poor countries can impede economic progress.
+
+The conclusion of the article is that economic growth, education level, and inflation rate all have an impact on income inequality in Malaysia. However, the impact of these factors varies depending on the level of economic development. In Malaysia, economic growth has led to an increase in income inequality. However, increasing education levels and reducing inflation rates can help to reduce income inequality.
+
+[Source](https://hrmars.com/papers_submitted/18136/the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia.pdf)
 
 ## 4. Data 
 
