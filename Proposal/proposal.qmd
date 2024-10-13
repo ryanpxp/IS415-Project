@@ -1,17 +1,47 @@
 ---
-title: "Proposal"
+title: "Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia"
 ---
 
-### **1. Background**
+## 1. Motivation
 
-### **2. Motivation**
+Intuitively, education plays a critical role in determining future economic opportunities and might be influenced by socio-economic conditions such as income inequality. However, school completion rates vary significantly across districts in Malaysia.
 
-### **3. Objectives**
+This project aims to explore the spatial relationship between income inequality, school completion rates and crime rates, with the goal of identifying districts where disparities are most pronounced. By using geospatial methods, we seek to uncover spatial patterns that can help policymakers target interventions more effectively.
 
-### **4. Data**
+## 2. Problem Statement
 
-### **5. Approaches**
+Despite Malaysia’s advancements in education, gaps in school completion rates persist across regions. One significant factor contributing to this is income inequality. Our project aims to answer the question: How does income inequality impact school completion rates across different regions of Malaysia? Additionally, we will investigate how other factors, such as regional crime rates, may interact with these variables to further affect educational outcomes.
 
-### **6. Literature Review**
+## 3. Related Work
 
-#### 
+## 4. Data 
+
+We will leverage the following datasets from the Malaysian government’s open data platform:
+
+-   **Income Inequality Data:** Household income inequality by district (<https://data.gov.my/data-catalogue/hh_inequality_district>)
+
+-   **School Completion Rates Data:** School completion rates by state (<https://data.gov.my/data-catalogue/completion_school_state>)
+
+-   **Crime Data:** Crime rates by district (<https://data.gov.my/data-catalogue/crime_district>)
+
+Data cleaning and preprocessing will involve handling missing values, merging datasets by geographic regions (district or state), and ensuring consistency in temporal coverage.
+
+## 5. Approach
+
+This project will use R Studio as the primary platform for data analysis and visualization.
+
+Our analysis will follow these key steps:
+
+-   **Exploratory Spatial Data Analysis (ESDA):** Using tools like Moran’s I and Local Indicators of Spatial Association (LISA), we will identify clusters of income inequality and school completion rates to understand if they are randomly distributed or form spatial patterns.
+
+-   **Geographically Weighted Regression (GWR):** To explore the relationship between income inequality and school completion rates, we will use GWR to assess how the strength of this relationship varies across regions. We will also include crime rates as a potential confounding variable to see how it interacts with our main variables of interest.
+
+## 6. Prototypes & Storyboards
+
+Our early prototype includes an interactive map displaying income inequality, school completion rates, and crime rates across Malaysian districts and states. Users will be able to toggle between layers to explore the spatial distribution of these variables. The map will highlight regions of interest where income inequality and low school completion rates cluster together. In future iterations, we will add results from the GWR model to show the varying impact of income inequality on school completion rates across different regions.
+
+## 7. Feedback & Future Steps
+
+This proposal serves as an opportunity to gather feedback on the direction of our analysis and the datasets we have selected.
+
+Based on the feedback, we may refine our approach by adjusting our data sources or expanding our analytical framework.
