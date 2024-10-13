@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Team: Abang Smith">
 <meta name="dcterms.date" content="2024-10-13">
 
-<title>IS415-Project - IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia</title>
+<title>IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia – IS415-Project</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -85,7 +85,7 @@ ul.task-list li input[type="checkbox"] {
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -100,7 +100,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -124,7 +124,6 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">4. Data</a></li>
   <li><a href="#approach" id="toc-approach" class="nav-link" data-scroll-target="#approach">5. Approach</a></li>
   <li><a href="#prototypes-storyboards" id="toc-prototypes-storyboards" class="nav-link" data-scroll-target="#prototypes-storyboards">6. Prototypes &amp; Storyboards</a></li>
-  <li><a href="#feedback-future-steps" id="toc-feedback-future-steps" class="nav-link" data-scroll-target="#feedback-future-steps">7. Feedback &amp; Future Steps</a></li>
   </ul>
 </nav>
     </div>
@@ -222,12 +221,8 @@ clear pattern.</p>
 </section>
 <section id="prototypes-storyboards" class="level2">
 <h2 class="anchored" data-anchor-id="prototypes-storyboards">6. Prototypes &amp; Storyboards</h2>
-<p>Our early prototype includes an interactive map displaying income inequality, school completion rates, and crime rates across Malaysian districts and states. Users will be able to toggle between layers to explore the spatial distribution of these variables. The map will highlight regions of interest where income inequality and low school completion rates cluster together. In future iterations, we will add results from the GWR model to show the varying impact of income inequality on school completion rates across different regions.</p>
-</section>
-<section id="feedback-future-steps" class="level2">
-<h2 class="anchored" data-anchor-id="feedback-future-steps">7. Feedback &amp; Future Steps</h2>
-<p>This proposal serves as an opportunity to gather feedback on the direction of our analysis and the datasets we have selected.</p>
-<p>Based on the feedback, we may refine our approach by adjusting our data sources or expanding our analytical framework.</p>
+<p><img src="images/clipboard-3263130708.png" class="img-fluid"></p>
+<p><img src="images/clipboard-3941781410.png" class="img-fluid"></p>
 
 
 </section>
@@ -268,18 +263,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -311,7 +295,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -319,7 +325,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {

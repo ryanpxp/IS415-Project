@@ -45,7 +45,7 @@ The conclusion of the article is that economic growth, education level, and infl
 
 [Source](https://hrmars.com/papers_submitted/18136/the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia.pdf)
 
-## 4. Data 
+## 4. Data
 
 We will leverage the following datasets from the Malaysian government’s open data platform:
 
@@ -69,10 +69,6 @@ Our analysis will follow these key steps:
 
 ## 6. Prototypes & Storyboards
 
-Our early prototype includes an interactive map displaying income inequality, school completion rates, and crime rates across Malaysian districts and states. Users will be able to toggle between layers to explore the spatial distribution of these variables. The map will highlight regions of interest where income inequality and low school completion rates cluster together. In future iterations, we will add results from the GWR model to show the varying impact of income inequality on school completion rates across different regions.
+![](images/clipboard-3263130708.png)
 
-## 7. Feedback & Future Steps
-
-This proposal serves as an opportunity to gather feedback on the direction of our analysis and the datasets we have selected.
-
-Based on the feedback, we may refine our approach by adjusting our data sources or expanding our analytical framework.
+![](images/clipboard-3941781410.png)

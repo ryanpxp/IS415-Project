@@ -53,7 +53,7 @@
     "href": "index.html#prototypes-storyboards",
     "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
     "section": "6. Prototypes & Storyboards",
-    "text": "6. Prototypes & Storyboards\nOur early prototype includes an interactive map displaying income inequality, school completion rates, and crime rates across Malaysian districts and states. Users will be able to toggle between layers to explore the spatial distribution of these variables. The map will highlight regions of interest where income inequality and low school completion rates cluster together. In future iterations, we will add results from the GWR model to show the varying impact of income inequality on school completion rates across different regions."
+    "text": "6. Prototypes & Storyboards"
   },
   {
     "objectID": "index.html#feedback-future-steps",
