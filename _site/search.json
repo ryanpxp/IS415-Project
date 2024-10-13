@@ -1,16 +1,65 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "IS415-Project",
-    "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
-  },
-  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "",
+    "text": "Intuitively, education plays a critical role in determining future economic opportunities and might be influenced by socio-economic conditions such as income inequality. However, school completion rates vary significantly across districts in Malaysia.\nThis project aims to explore the spatial relationship between income inequality, school completion rates and crime rates, with the goal of identifying districts where disparities are most pronounced. By using geospatial methods, we seek to uncover spatial patterns that can help policymakers target interventions more effectively."
+  },
+  {
+    "objectID": "index.html#motivation",
+    "href": "index.html#motivation",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "",
+    "text": "Intuitively, education plays a critical role in determining future economic opportunities and might be influenced by socio-economic conditions such as income inequality. However, school completion rates vary significantly across districts in Malaysia.\nThis project aims to explore the spatial relationship between income inequality, school completion rates and crime rates, with the goal of identifying districts where disparities are most pronounced. By using geospatial methods, we seek to uncover spatial patterns that can help policymakers target interventions more effectively."
+  },
+  {
+    "objectID": "index.html#problem-statement",
+    "href": "index.html#problem-statement",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "2. Problem Statement",
+    "text": "2. Problem Statement\nDespite Malaysia’s advancements in education, gaps in school completion rates persist across regions. One significant factor contributing to this is income inequality. Our project aims to answer the question: How does income inequality impact school completion rates across different regions of Malaysia? Additionally, we will investigate how other factors, such as regional crime rates, may interact with these variables to further affect educational outcomes."
+  },
+  {
+    "objectID": "index.html#related-work",
+    "href": "index.html#related-work",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "3. Related Work",
+    "text": "3. Related Work"
+  },
+  {
+    "objectID": "index.html#data",
+    "href": "index.html#data",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "4. Data",
+    "text": "4. Data\nWe will leverage the following datasets from the Malaysian government’s open data platform:\n\nIncome Inequality Data: Household income inequality by district (https://data.gov.my/data-catalogue/hh_inequality_district)\nSchool Completion Rates Data: School completion rates by state (https://data.gov.my/data-catalogue/completion_school_state)\nCrime Data: Crime rates by district (https://data.gov.my/data-catalogue/crime_district)\n\nData cleaning and preprocessing will involve handling missing values, merging datasets by geographic regions (district or state), and ensuring consistency in temporal coverage."
+  },
+  {
+    "objectID": "index.html#approach",
+    "href": "index.html#approach",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "5. Approach",
+    "text": "5. Approach\nThis project will use R Studio as the primary platform for data analysis and visualization.\nOur analysis will follow these key steps:\n\nExploratory Spatial Data Analysis (ESDA): Using tools like Moran’s I and Local Indicators of Spatial Association (LISA), we will identify clusters of income inequality and school completion rates to understand if they are randomly distributed or form spatial patterns.\nGeographically Weighted Regression (GWR): To explore the relationship between income inequality and school completion rates, we will use GWR to assess how the strength of this relationship varies across regions. We will also include crime rates as a potential confounding variable to see how it interacts with our main variables of interest."
+  },
+  {
+    "objectID": "index.html#prototypes-storyboards",
+    "href": "index.html#prototypes-storyboards",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "6. Prototypes & Storyboards",
+    "text": "6. Prototypes & Storyboards\nOur early prototype includes an interactive map displaying income inequality, school completion rates, and crime rates across Malaysian districts and states. Users will be able to toggle between layers to explore the spatial distribution of these variables. The map will highlight regions of interest where income inequality and low school completion rates cluster together. In future iterations, we will add results from the GWR model to show the varying impact of income inequality on school completion rates across different regions."
+  },
+  {
+    "objectID": "index.html#feedback-future-steps",
+    "href": "index.html#feedback-future-steps",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "7. Feedback & Future Steps",
+    "text": "7. Feedback & Future Steps\nThis proposal serves as an opportunity to gather feedback on the direction of our analysis and the datasets we have selected.\nBased on the feedback, we may refine our approach by adjusting our data sources or expanding our analytical framework."
   }
 ]
