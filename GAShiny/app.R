@@ -9,6 +9,9 @@ msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp",
     crs = 4326) %>%
   st_transform(crs = 3168)
 set.seed(2321)
+
+combined_data <- read_rds("data/rds/combined_data.rds")
+
 #========================#
 ###### Shiny UI ######
 #========================#  
@@ -136,7 +139,76 @@ ui <- navbarPage(
              )
            )
   ),
-  tabPanel("Geographically Weighted Regression")
+  tabPanel("Geographically Weighted Regression",
+           sidebarLayout(
+             sidebarPanel(
+               titlePanel("Data Selection"),
+               selectInput("IndependentVar", "Select Independent Variable (Backspace to remove selection)",
+                           choices = c("Poverty relative" = "pr",
+                                       "Poverty absolute" = "pa",
+                                       "Income inequality" = "ii",
+                                       "Mean household income" = "mehi",
+                                       "Median household income" = "mdhi"),
+                           selected = c("pr", "pa", "ii", "mehi", "mdhi"),
+                           multiple = TRUE),
+               fluidRow(column(7,
+                               
+                               selectInput(inputId = "categoryVariable3",
+                                           label = "Select Category",
+                                           choices = NULL,
+                                           multiple = TRUE),
+                               
+                               selectInput(inputId = "typeVariable3",
+                                           label = "Select Type",
+                                           choices = NULL,
+                                           multiple = TRUE),
+               ),
+               column(3, offset = 1,
+                      radioButtons(inputId = "year",
+                                   label = "Year",
+                                   choices = c("2019",
+                                               "2022"),
+                                   selected = "2019"),
+               )),
+               sliderInput(inputId = "SigLvl", 
+                           label = "Significance Level:", 
+                           min = 0, max = 1,
+                           value = 0.05, step = 0.01),
+               titlePanel("Bandwidth computation parameters"),
+               selectInput("Bandwidth", "Select Bandwidth",
+                           choices = c("Adaptive" = TRUE,
+                                       "Fixed" = FALSE),
+                           selected = FALSE),
+               selectInput("Bandwidth", "Computation Function",
+                           choices = c("Gaussian" = "gaussian",
+                                       "Exponential" = "exponential",
+                                       "Bisquare" = "bisquare",
+                                       "Tricube" = "tricube",
+                                       "Boxcar" = "boxcar"),
+                           selected = "gaussian"),
+               selectInput("Bandwidth", "Select Approach",
+                           choices = c("Cross VAlidation (CV)" = "CV",
+                                       "Akaike Information Criterion (AIC)" = "AIC"),
+                           selected = "CV"),
+              
+               
+               actionButton("GwrUpdate", "Plot"),
+             ),
+             mainPanel(
+               tabsetPanel(type = "tabs",
+                           tabPanel("Global Spatial Correlation", plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
+                           tabPanel("Local Spatial Correlation", 
+                                    plotOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
+                                    tmapOutput("LISA") %>% withSpinner(color = "#3498db")
+                           ),
+                           tabPanel("Emerging Hot Spot Analysis", 
+                                    plotOutput("EHSA") %>% withSpinner(color = "#3498db"),
+                                    plotOutput("EHSABar") %>% withSpinner(color = "#3498db")),
+               )
+             )
+           )
+           
+           )
 )
 
 #========================#
@@ -149,11 +221,13 @@ server <- function(input, output, session){
   unique_category <- c("all", unique(msia$category))
   updateSelectInput(session, "categoryVariable", choices = unique_category)
   updateSelectInput(session, "categoryVariable2", choices = unique(msia$category))
+  updateSelectInput(session, "categoryVariable3", choices = unique(combined_data$category))
   
   #Load choices for type
   unique_type <- c("all", unique(msia$type))
   updateSelectInput(session, "typeVariable", choices = unique_type)
   updateSelectInput(session, "typeVariable2", choices = unique(msia$type))
+  updateSelectInput(session, "typeVariable3", choices = unique(combined_data$type))
   
   #==========================================================
   # EDA
