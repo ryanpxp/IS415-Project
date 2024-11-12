@@ -22,10 +22,10 @@ ui <- navbarPage(
            sidebarLayout(
              sidebarPanel(
                titlePanel("EDA"),
-               selectInput("EDAVariable", "Select variable for EDA",
-                           choices = c("participation rate" = "p_rate",
-                                       "unemployment rate" = "u_rate",
-                                       "crimes" = "crimes")),
+               selectInput(inputId = "EDAVariable", "Select variable for EDA",
+                           choices = c("Participation rate" = "p_rate",
+                                       "Unemployment rate" = "u_rate",
+                                       "Crimes" = "crimes")),
                radioButtons(inputId = "EDAyear",
                             label = "Year",
                             choices = c("2019", 
@@ -36,7 +36,15 @@ ui <- navbarPage(
                actionButton("EDAUpdate", "Plot"),
              ),
              mainPanel(
-               plotOutput("edaHistogram") %>% withSpinner(color = "#3498db")
+               fluidRow(
+                 column(6,
+                        plotOutput("edaHistogram") %>% withSpinner(color = "#3498db")
+                        ),
+                 column(6,
+                        plotOutput("edaBoxplot") %>% withSpinner(color = "#3498db")
+                        )
+               ),
+               plotOutput("qtmPlot") %>% withSpinner(color = "#3498db")
              )
            )
            ),
@@ -273,13 +281,30 @@ server <- function(input, output, session){
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
     histogram <- {
-      ggplot(data=df, 
-             aes(x=input$EDAVariable)) +
-        geom_histogram(bins=20, 
-                       color="black", 
-                       fill="light blue")
+      ggplot(data = df, aes_string(x = input$EDAVariable)) +
+        geom_histogram(bins = 20, color = "black", fill = "light blue")
     }
     histogram
+  })
+  
+  #Render Boxpot for EDA
+  output$edaBoxplot <- renderPlot({
+    df <- EDAResults()
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    boxplot <- {
+      ggplot(data = df, aes_string(x = input$EDAVariable)) +
+        geom_boxplot(color = "black", fill = "light blue")
+    }
+    boxplot
+  })
+  
+  #Render Boxpot for EDA
+  output$qtmPlot <- renderPlot({
+    df <- EDAResults()
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    return (qtm(df,input$EDAVariable))
   })
   
   #Render Histogram for global spatial
