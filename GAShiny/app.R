@@ -1,5 +1,5 @@
 pacman::p_load(shiny, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
-             st, tidyverse, raster, tmap, tmaptools, ggplot2, spatstat,knitr)
+             st, tidyverse, raster, tmap, tmaptools, ggplot2, spatstat,knitr,performance, see, sfdep, GWmodel,olsrr, ggstatsplot)
 
 msia <- read_rds("data/rds/msia.rds")
 msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp", 
@@ -140,76 +140,176 @@ ui <- navbarPage(
            )
   ),
   tabPanel("Geographically Weighted Regression",
-           sidebarLayout(
-             sidebarPanel(
-               titlePanel("Data Selection"),
-               selectInput("IndependentVar", "Select Independent Variable (Backspace to remove selection)",
-                           choices = c("Poverty relative" = "pr",
-                                       "Poverty absolute" = "pa",
-                                       "Income inequality" = "ii",
-                                       "Mean household income" = "mehi",
-                                       "Median household income" = "mdhi"),
-                           selected = c("pr", "pa", "ii", "mehi", "mdhi"),
-                           multiple = TRUE),
-               fluidRow(column(7,
-                               
-                               selectInput(inputId = "categoryVariable3",
-                                           label = "Select Category",
-                                           choices = NULL,
-                                           multiple = TRUE),
-                               
-                               selectInput(inputId = "typeVariable3",
-                                           label = "Select Type",
-                                           choices = NULL,
-                                           multiple = TRUE),
-               ),
-               column(3, offset = 1,
-                      radioButtons(inputId = "year",
-                                   label = "Year",
-                                   choices = c("2019",
-                                               "2022"),
-                                   selected = "2019"),
-               )),
-               sliderInput(inputId = "SigLvl", 
-                           label = "Significance Level:", 
-                           min = 0, max = 1,
-                           value = 0.05, step = 0.01),
-               titlePanel("Bandwidth computation parameters"),
-               selectInput("Bandwidth", "Select Bandwidth",
-                           choices = c("Adaptive" = TRUE,
-                                       "Fixed" = FALSE),
-                           selected = FALSE),
-               selectInput("Bandwidth", "Computation Function",
-                           choices = c("Gaussian" = "gaussian",
-                                       "Exponential" = "exponential",
-                                       "Bisquare" = "bisquare",
-                                       "Tricube" = "tricube",
-                                       "Boxcar" = "boxcar"),
-                           selected = "gaussian"),
-               selectInput("Bandwidth", "Select Approach",
-                           choices = c("Cross VAlidation (CV)" = "CV",
-                                       "Akaike Information Criterion (AIC)" = "AIC"),
-                           selected = "CV"),
-              
-               
-               actionButton("GwrUpdate", "Plot"),
-             ),
-             mainPanel(
-               tabsetPanel(type = "tabs",
-                           tabPanel("Global Spatial Correlation", plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
-                           tabPanel("Local Spatial Correlation", 
-                                    plotOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
-                                    tmapOutput("LISA") %>% withSpinner(color = "#3498db")
-                           ),
-                           tabPanel("Emerging Hot Spot Analysis", 
-                                    plotOutput("EHSA") %>% withSpinner(color = "#3498db"),
-                                    plotOutput("EHSABar") %>% withSpinner(color = "#3498db")),
-               )
-             )
-           )
-           
+           tabsetPanel(type = "tabs",
+                       tabPanel("Assumptions checks",
+                                sidebarLayout(
+                                  sidebarPanel(
+                                    titlePanel("Data Selection"),
+                                    selectInput("IndependentVar", "Select Independent Variable (Backspace to remove selection)",
+                                                choices = c("Poverty relative" = "poverty_relative",
+                                                            "Poverty absolute" = "poverty_absolute",
+                                                            "Income inequality" = "inequality",
+                                                            "Mean household income" = "income_mean",
+                                                            "Median household income" = "income_median"),
+                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median"),
+                                                multiple = TRUE),
+                                    fluidRow(column(7,
+                                                    
+                                                    selectInput(inputId = "categoryVariable3",
+                                                                label = "Select Category",
+                                                                choices = NULL,
+                                                                multiple = TRUE),
+                                                    
+                                                    selectInput(inputId = "typeVariable3",
+                                                                label = "Select Type",
+                                                                choices = NULL,
+                                                                multiple = TRUE),
+                                    ),
+                                    column(3, offset = 1,
+                                           radioButtons(inputId = "GWRyear",
+                                                        label = "Year",
+                                                        choices = c("2019",
+                                                                    "2022"),
+                                                        selected = "2019"),
+                                    )),
+                                    sliderInput(inputId = "SigLvl", 
+                                                label = "Significance Level:", 
+                                                min = 0, max = 1,
+                                                value = 0.05, step = 0.01),
+                                    sliderInput(inputId = "PVal", 
+                                                label = "P-Value:", 
+                                                min = 0, max = 1,
+                                                value = 0.05, step = 0.01),
+                                    
+                                    
+                                    actionButton("AssumptionUpdate", "Plot"),
+                                  ),
+                                  mainPanel(
+                                    tabsetPanel(type = "tabs",
+                                                tabPanel("Correlation analysis", 
+                                                         plotOutput("CorrelationMatrix") %>% withSpinner(color = "#3498db")
+                                                ),
+                                                tabPanel("Model Performance", 
+                                                         plotOutput("ModelPerformance") %>% withSpinner(color = "#3498db")
+                                                ),
+                                                tabPanel("Checks", 
+                                                         
+                                                         fluidRow(column(5,
+                                                                plotOutput("Linearity") %>% withSpinner(color = "#3498db"), 
+                                                                plotOutput("Outliers") %>% withSpinner(color = "#3498db"),          
+                                                              
+                                                         ),
+                                                         column(5, offset = 1,
+                                                                plotOutput("Normality") %>% withSpinner(color = "#3498db"),
+                                                                plotOutput("Multicollinearity") %>% withSpinner(color = "#3498db"),
+                                                                
+                                                         )),
+                                                )
+                                    )
+                                  )
+                                )
+                                ),
+                       tabPanel("GWR model",
+                                sidebarLayout(
+                                  sidebarPanel(
+                                    titlePanel("Data Selection"),
+                                    selectInput("IndependentVar2", "Select Independent Variable (Backspace to remove selection)",
+                                                choices = c("Poverty relative" = "poverty_relative",
+                                                            "Poverty absolute" = "poverty_absolute",
+                                                            "Income inequality" = "inequality",
+                                                            "Mean household income" = "income_mean",
+                                                            "Median household income" = "income_median"),
+                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median"),
+                                                multiple = TRUE),
+                                    fluidRow(column(7,
+                                                    
+                                                    selectInput(inputId = "categoryVariable4",
+                                                                label = "Select Category",
+                                                                choices = NULL,
+                                                                multiple = TRUE),
+                                                    
+                                                    selectInput(inputId = "typeVariable4",
+                                                                label = "Select Type",
+                                                                choices = NULL,
+                                                                multiple = TRUE),
+                                    ),
+                                    column(3, offset = 1,
+                                           radioButtons(inputId = "GWRyear2",
+                                                        label = "Year",
+                                                        choices = c("2019",
+                                                                    "2022"),
+                                                        selected = "2019"),
+                                    )),
+                                    sliderInput(inputId = "SigLvl", 
+                                                label = "Significance Level:", 
+                                                min = 0, max = 1,
+                                                value = 0.05, step = 0.01),
+                                    titlePanel("Bandwidth computation parameters"),
+                                    selectInput("Bandwidth", "Select Bandwidth",
+                                                choices = c("Adaptive" = TRUE,
+                                                            "Fixed" = FALSE),
+                                                selected = FALSE),
+                                    selectInput("Bandwidth", "Computation Function",
+                                                choices = c("Gaussian" = "gaussian",
+                                                            "Exponential" = "exponential",
+                                                            "Bisquare" = "bisquare",
+                                                            "Tricube" = "tricube",
+                                                            "Boxcar" = "boxcar"),
+                                                selected = "gaussian"),
+                                    selectInput("Bandwidth", "Select Approach",
+                                                choices = c("Cross Validation (CV)" = "CV",
+                                                            "Akaike Information Criterion (AIC)" = "AIC"),
+                                                selected = "CV"),
+                                    
+                                    
+                                    actionButton("GwrUpdate", "Plot"),
+                                  ),
+                                  mainPanel(
+                                    fluidRow(column(12,
+                                          tmapOutput("GWR") %>% withSpinner(color = "#3498db"),
+                                    ),
+                                    column(12, 
+                                          tmapOutput("GWR2") %>% withSpinner(color = "#3498db"),
+                                           
+                                    ))
+                                             ),
+                                    
+                                )
+                                
+                            )
+                       )
            )
 )
+
+#========================#
+###### GWR Function ######
+#========================# 
+run_regression <- function(data, response, predictors) {
+  # Create formula from response and predictors
+  formula <- as.formula(
+    paste(response, "~", paste(predictors, collapse = " + "))
+  )
+  
+  # Run the linear model
+  model <- lm(formula = formula, data = data)
+  
+  return(model)
+}
+
+run_stepwise_selection <- function(model, direction = "forward", p_val = 0.05, details = FALSE) {
+  if (!direction %in% c("forward", "backward", "both")) {
+    stop("Invalid direction. Choose from 'forward', 'backward', or 'both'.")
+  }
+  
+  stepwise_model <- switch(
+    direction,
+    "forward" = ols_step_forward_p(model, p_val = p_val, details = details),
+    "backward" = ols_step_backward_p(model, p_val = p_val, details = details),
+    "both" = ols_step_both_p(model, p_val = p_val, details = details)
+  )
+  
+  return(stepwise_model)
+}
 
 #========================#
 ###### Shiny Server ######
@@ -222,12 +322,14 @@ server <- function(input, output, session){
   updateSelectInput(session, "categoryVariable", choices = unique_category)
   updateSelectInput(session, "categoryVariable2", choices = unique(msia$category))
   updateSelectInput(session, "categoryVariable3", choices = unique(combined_data$category))
+  updateSelectInput(session, "categoryVariable4", choices = unique(combined_data$category))
   
   #Load choices for type
   unique_type <- c("all", unique(msia$type))
   updateSelectInput(session, "typeVariable", choices = unique_type)
   updateSelectInput(session, "typeVariable2", choices = unique(msia$type))
   updateSelectInput(session, "typeVariable3", choices = unique(combined_data$type))
+  updateSelectInput(session, "typeVariable4", choices = unique(combined_data$type))
   
   #==========================================================
   # EDA
@@ -249,7 +351,7 @@ server <- function(input, output, session){
   
   
   #==========================================================
-  # Filtering of data for local and global spaital
+  # Filtering of data for local and global spatial
   #==========================================================   
   
   MsiaFiltered <- eventReactive(input$MoranUpdate,{
@@ -472,6 +574,313 @@ server <- function(input, output, session){
       geom_bar(show.legend = FALSE)
     
     ehsabar 
+  })
+  
+  
+  #==========================================================
+  # GWR
+  #==========================================================
+  AssumptionResults <- eventReactive(input$AssumptionUpdate,{
+    
+    if(nrow(combined_data) == 0) return(NULL)  # Exit if no data
+    
+    combined_data_filtered <- combined_data %>% filter(
+      category %in% input$categoryVariable3, type %in% input$typeVariable3, year %in% input$GWRyear)
+    
+    return (combined_data_filtered)
+      
+  })
+  
+  output$CorrelationMatrix <- renderPlot({
+    df <- AssumptionResults()
+    
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    ggcorrmat(df[, 6:11])
+  })
+  
+  output$ModelPerformance <- renderPlot({
+    df <- AssumptionResults()
+    
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    predictors <- input$IndependentVar
+    
+    # Run the function with the specified data and predictors
+    base_model <- run_regression(
+      data = df,
+      response = "crimes",
+      predictors = predictors
+    )
+    
+    forward_selection <- run_stepwise_selection(
+      model = base_model,
+      direction = "forward",
+      p_val = 0.05, #todo
+      details = FALSE
+    )
+    backward_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "backward",
+      p_val = 0.05,
+      details = FALSE
+    )
+    bidirectional_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "both",
+      p_val = 0.05,
+      details = FALSE
+    )
+    metric <- compare_performance(base_model, 
+                                  forward_selection$model,
+                                  backward_elimination$model,
+                                  bidirectional_elimination$model)
+    metric$Name <- gsub(".*\\\\([a-zA-Z0-9_]+)\\\\, \\\\model\\\\.*", "\\1", metric$Name)
+    plot(metric)
+    
+  })
+  
+  output$Linearity <- renderPlot({
+    df <- AssumptionResults()
+    
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    predictors <- input$IndependentVar
+    
+    # Run the function with the specified data and predictors
+    base_model <- run_regression(
+      data = df,
+      response = "crimes",
+      predictors = predictors
+    )
+    
+    forward_selection <- run_stepwise_selection(
+      model = base_model,
+      direction = "forward",
+      p_val = 0.05, #todo
+      details = FALSE
+    )
+    backward_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "backward",
+      p_val = 0.05,
+      details = FALSE
+    )
+    bidirectional_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "both",
+      p_val = 0.05,
+      details = FALSE
+    )
+    out <- plot(check_model(bidirectional_elimination$model, 
+                            panel = FALSE))
+    
+    
+    out[[2]]
+  })
+  
+  output$Normality <- renderPlot({
+    df <- AssumptionResults()
+    
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    predictors <- input$IndependentVar
+    
+    # Run the function with the specified data and predictors
+    base_model <- run_regression(
+      data = df,
+      response = "crimes",
+      predictors = predictors
+    )
+    
+    forward_selection <- run_stepwise_selection(
+      model = base_model,
+      direction = "forward",
+      p_val = 0.05, #todo
+      details = FALSE
+    )
+    backward_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "backward",
+      p_val = 0.05,
+      details = FALSE
+    )
+    bidirectional_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "both",
+      p_val = 0.05,
+      details = FALSE
+    )
+    
+    ols_plot_resid_hist(bidirectional_elimination$model) +
+      labs(title = "Normality")
+  })
+
+  output$Outliers <- renderPlot({
+    df <- AssumptionResults()
+    
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    predictors <- input$IndependentVar
+    
+    # Run the function with the specified data and predictors
+    base_model <- run_regression(
+      data = df,
+      response = "crimes",
+      predictors = predictors
+    )
+    
+    forward_selection <- run_stepwise_selection(
+      model = base_model,
+      direction = "forward",
+      p_val = 0.05, #todo
+      details = FALSE
+    )
+    backward_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "backward",
+      p_val = 0.05,
+      details = FALSE
+    )
+    bidirectional_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "both",
+      p_val = 0.05,
+      details = FALSE
+    )
+    
+    plot(check_outliers(bidirectional_elimination$model,
+                        method = "cook")) + labs(title = "Outliers")
+  })
+  
+  output$Multicollinearity <- renderPlot({
+    df <- AssumptionResults()
+    
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    predictors <- input$IndependentVar
+    
+    # Run the function with the specified data and predictors
+    base_model <- run_regression(
+      data = df,
+      response = "crimes",
+      predictors = predictors
+    )
+    
+    forward_selection <- run_stepwise_selection(
+      model = base_model,
+      direction = "forward",
+      p_val = 0.05, #todo
+      details = FALSE
+    )
+    backward_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "backward",
+      p_val = 0.05,
+      details = FALSE
+    )
+    bidirectional_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "both",
+      p_val = 0.05,
+      details = FALSE
+    )
+    
+    plot(check_collinearity(bidirectional_elimination$model)) + 
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  })
+  
+  GwrResults <- eventReactive(input$GwrUpdate,{
+    
+    if(nrow(combined_data) == 0) return(NULL)  # Exit if no data
+    
+    combined_data_filtered2 <- combined_data %>% filter(
+      category %in% input$categoryVariable4, type %in% input$typeVariable4, year %in% input$GWRyear2)
+    
+    predictors <- input$IndependentVar2
+    
+    # Run the function with the specified data and predictors
+    base_model <- run_regression(
+      data = combined_data_filtered2,
+      response = "crimes",
+      predictors = predictors
+    )
+    
+    forward_selection <- run_stepwise_selection(
+      model = base_model,
+      direction = "forward",
+      p_val = 0.05, #todo
+      details = FALSE
+    )
+    backward_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "backward",
+      p_val = 0.05,
+      details = FALSE
+    )
+    bidirectional_elimination <- run_stepwise_selection(
+      model = base_model,
+      direction = "both",
+      p_val = 0.05,
+      details = FALSE
+    )
+    
+    mlr_output <- as.data.frame(bidirectional_elimination$model$residuals) %>%
+      rename(`SB_MLR_RES` = `bidirectional_elimination$model$residuals`)
+    
+    residual <- data.frame(MLR_RES = rep(NA, nrow(combined_data_filtered2)))
+    residual[rownames(mlr_output), "MLR_RES"] <- mlr_output$SB_MLR_RES
+    combined_data_filtered2 <- cbind(combined_data_filtered2, 
+                                  residual)
+    combined_data_filtered2_st <- st_as_sf(combined_data_filtered2)
+    
+    combined_data_filtered2_st <- combined_data_filtered2_st %>%
+      filter(
+        !is.na(crimes) & !is.na(poverty_relative) & !is.na(poverty_absolute) &
+          !is.na(inequality) & !is.na(income_mean) & !is.na(income_median) &
+          is.finite(crimes) & is.finite(poverty_relative) & is.finite(poverty_absolute) &
+          is.finite(inequality) & is.finite(income_mean) & is.finite(income_median)
+      )
+    
+    bw.fixed <- bw.gwr(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
+                         income_mean + income_median, 
+                       data=combined_data_filtered2_st, 
+                       approach="CV", 
+                       kernel="gaussian", 
+                       adaptive=FALSE, 
+                       longlat=FALSE)
+    
+    gwr.fixed <- gwr.basic(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
+                             income_mean + income_median, 
+                           data=combined_data_filtered2_st, 
+                           bw=bw.fixed, 
+                           kernel = 'gaussian', 
+                           longlat = FALSE)
+    
+    result <- st_as_sf(gwr.fixed$SDF) %>%
+      st_transform(crs=3168)
+    
+    return(result)
+  })
+  
+  output$GWR <- renderTmap({
+    df <- GwrResults()
+    if(is.null(df)) return()
+    
+    tmap_mode("view")
+    Local_R2 <- tm_shape(df) +
+      tm_polygons(col = "Local_R2", alpha = 0.6) +
+      tm_view(set.zoom.limits = c(5, 9))
+  })
+  
+  output$GWR2 <- renderTmap({
+    df <- GwrResults()
+    if(is.null(df)) return()
+    
+    tmap_mode("view")
+    Inequality_TV <- tm_shape(df) +
+      tm_polygons(col = "inequality_TV", alpha = 0.6) +
+      tm_view(set.zoom.limits = c(5, 9))
   })
 }
 
