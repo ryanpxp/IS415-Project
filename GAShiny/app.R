@@ -292,14 +292,14 @@ ui <-
                                                 choices = c("Adaptive" = TRUE,
                                                             "Fixed" = FALSE),
                                                 selected = FALSE),
-                                    selectInput("Bandwidth", "Computation Function",
+                                    selectInput("ComputationFunc", "Computation Function",
                                                 choices = c("Gaussian" = "gaussian",
                                                             "Exponential" = "exponential",
                                                             "Bisquare" = "bisquare",
                                                             "Tricube" = "tricube",
                                                             "Boxcar" = "boxcar"),
                                                 selected = "gaussian"),
-                                    selectInput("Bandwidth", "Select Approach",
+                                    selectInput("Approach", "Select Approach",
                                                 choices = c("Cross Validation (CV)" = "CV",
                                                             "Akaike Information Criterion (AIC)" = "AIC"),
                                                 selected = "CV"),
@@ -981,22 +981,22 @@ server <- function(input, output, session){
           is.finite(inequality) & is.finite(income_mean) & is.finite(income_median)
       )
     
-    bw.fixed <- bw.gwr(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
+    bw <- bw.gwr(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
                          income_mean + income_median, 
                        data=combined_data_filtered2_st, 
-                       approach="CV", 
-                       kernel="gaussian", 
-                       adaptive=FALSE, 
+                       approach=input$Approach, 
+                       kernel=input$ComputationFunc, 
+                       adaptive=as.logical(input$Bandwidth),
                        longlat=FALSE)
     
-    gwr.fixed <- gwr.basic(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
+    gwr.result <- gwr.basic(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
                              income_mean + income_median, 
                            data=combined_data_filtered2_st, 
-                           bw=bw.fixed, 
-                           kernel = 'gaussian', 
+                           bw=bw, 
+                           kernel = input$ComputationFunc, 
                            longlat = FALSE)
     
-    return(gwr.fixed)
+    return(gwr.result)
   })
   
   output$GWR <- renderTmap({
