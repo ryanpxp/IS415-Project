@@ -16,128 +16,183 @@ combined_data <- read_rds("data/rds/combined_data.rds")
 ###### Shiny UI ######
 #========================#  
 
-ui <- navbarPage(
+ui <-
+  tagList(
+  shinythemes::themeSelector(),
+  navbarPage(
   title = "Abang Smith",
   fluid = TRUE,
+<<<<<<< HEAD
   theme=shinytheme("cosmo"),
+=======
+>>>>>>> ba5b7c7f2697aa1a47c8fc12cb052d71c33c4f35
   id = "navbarID",
   tabPanel("EDA",
-           sidebarLayout(
-             sidebarPanel(
-               titlePanel("EDA"),
-               selectInput(inputId = "EDAVariable", "Select variable for EDA",
-                           choices = c("Participation rate" = "p_rate",
-                                       "Unemployment rate" = "u_rate",
-                                       "Crimes" = "crimes")),
-               radioButtons(inputId = "EDAyear",
-                            label = "Year",
-                            choices = c("2019", 
-                                        "2020",
-                                        "2021",
-                                        "2022"),
-                            selected = "2019"),
-               actionButton("EDAUpdate", "Plot"),
-             ),
-             mainPanel(
-               fluidRow(
-                 column(6,
-                        plotOutput("edaHistogram") %>% withSpinner(color = "#3498db")
-                        ),
-                 column(6,
-                        plotOutput("edaBoxplot") %>% withSpinner(color = "#3498db")
-                        )
-               ),
-               plotOutput("qtmPlot") %>% withSpinner(color = "#3498db")
-             )
-           )
+           tabsetPanel(type = "tabs",
+                       tabPanel("Data Set",
+                                sidebarLayout(
+                                  sidebarPanel(
+                                    titlePanel("EDA"),
+                                    selectInput(inputId = "EDAVariable", "Select variable for EDA",
+                                                choices = c("Participation rate" = "p_rate",
+                                                            "Unemployment rate" = "u_rate",
+                                                            "Crimes" = "crimes")),
+                                    radioButtons(inputId = "EDAyear",
+                                                 label = "Year",
+                                                 choices = c("2019", 
+                                                             "2020",
+                                                             "2021",
+                                                             "2022"),
+                                                 selected = "2019"),
+                                    actionButton("EDAUpdate", "Plot"),
+                                  ),
+                                  mainPanel(
+                                    fluidRow(
+                                      column(6,
+                                             plotOutput("edaHistogram") %>% withSpinner(color = "#3498db")
+                                      ),
+                                      column(6,
+                                             plotOutput("edaBoxplot") %>% withSpinner(color = "#3498db")
+                                      )
+                                    ),
+                                        plotOutput("qtmPlot") %>% withSpinner(color = "#3498db")
+                                  )
+                                )
+                              ),
+                       tabPanel("LISA",
+                                sidebarLayout(
+                                  sidebarPanel(
+                                    titlePanel("LISA"),
+                                    selectInput(inputId = "EDAVariable2", "Select EDA variable for LISA",
+                                                choices = c("Participation rate" = "p_rate",
+                                                            "Unemployment rate" = "u_rate",
+                                                            "Crimes" = "crimes")),
+                                    selectInput("LisaClass2", "Select Lisa Classification",
+                                                choices = c("mean" = "mean",
+                                                            "median" = "median",
+                                                            "pysal" = "pysal"),
+                                                selected = "mean"),
+                                    radioButtons(inputId = "EDAyear2",
+                                                 label = "Year",
+                                                 choices = c("2019", 
+                                                             "2020",
+                                                             "2021",
+                                                             "2022"),
+                                                 selected = "2019"),
+                                    actionButton("EDAUpdate2", "Plot"),
+                                  ),
+                                  mainPanel(
+                                    tmapOutput("LISA2") %>% withSpinner(color = "#3498db")
+                                  )
+                                )
+                       ),
+                     ),
            ),
   tabPanel("Spatial Correlation",
-           sidebarLayout(
-             sidebarPanel(
-                 titlePanel("Global and Local Spatial"),
-                 fluidRow(column(7,
-                                 
-                                selectInput(inputId = "categoryVariable",
-                                 label = "Select Category",
-                                 choices = NULL),
-                                 
-                                selectInput(inputId = "typeVariable",
-                                            label = "Select Type",
-                                            choices = NULL),
-                 ),
-                 column(3, offset = 1,
-                        radioButtons(inputId = "year",
-                                     label = "Year",
-                                     choices = c("2019", 
-                                                 "2020",
-                                                 "2021",
-                                                 "2022"),
-                                     selected = "2019"),
-                 )),
-                 radioButtons(inputId = "Contiguity1",
-                              label = "Contiguity Method",
-                              choices = c("Queen" = TRUE, 
-                                          "Rook" = FALSE),
-                              selected = "TRUE",
-                              inline = TRUE),
-                 selectInput("MoranWeights", "Spatial Weights Style",
-                             choices = c("W: Row standardised" = "W",
-                                         "B: Binary" = "B",
-                                         "C: Globally standardised" = "C",
-                                         "U: C / no of neighbours" = "U",
-                                         "minmax" = "minmax",
-                                         "S: Variance" = "S"),
-                             selected = "W"),
-                 sliderInput(inputId = "MoranSims", 
-                             label = "Number of Simulations:", 
-                             min = 99, max = 499,
-                             value = 99, step = 100),
-                 selectInput("LisaClass", "Select Lisa Classification",
-                             choices = c("mean" = "mean",
-                                         "median" = "median",
-                                         "pysal" = "pysal"),
-                             selected = "mean"),
-                 selectInput("localmoranstats", "Select Local Moran's Stat:",
-                             choices = c("local moran(ii)" = "local moran(ii)",
-                                         "expectation(eii)" = "expectation(eii)",
-                                         "variance(var_ii)" = "variance(var_ii)",
-                                         "std deviation(z_ii)" = "std deviation(z_ii)",
-                                         "P-value" = "p_value"),
-                             selected = "local moran(ii)"),
-                 sliderInput(inputId = "MoranConf", 
-                             label = "Select Confidence level", 
-                             min = 0.75, max = 0.99,
-                             value = 0.75, step = 0.05),
-                 titlePanel("Emerging Hot Spot Analysis"),
-                 selectInput(inputId = "categoryVariable2",
-                             label = "Select Category",
-                             choices = NULL),
-                 selectInput(inputId = "typeVariable2",
-                             label = "Select Type",
-                             choices = NULL),
-                 sliderInput(inputId = "EHSASims", 
-                             label = "Number of Simulations:", 
-                             min = 99, max = 499,
-                             value = 99, step = 100),
-                 sliderInput(inputId = "MoranConf2", 
-                             label = "Select Confidence level", 
-                             min = 0.75, max = 0.99,
-                             value = 0.75, step = 0.05),
-               actionButton("MoranUpdate", "Plot Map"),
-             ),
-             mainPanel(
-               tabsetPanel(type = "tabs",
-                           tabPanel("Global Spatial Correlation", plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
-                           tabPanel("Local Spatial Correlation", 
-                                    plotOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
-                                    tmapOutput("LISA") %>% withSpinner(color = "#3498db")
+           tabsetPanel(type = "tabs",
+                       tabPanel("Global and Local Spatial Correlation",
+                                sidebarLayout(
+                                  sidebarPanel(
+                                    titlePanel("Global and Local Spatial"),
+                                    fluidRow(column(7,
+                                                    selectInput(inputId = "typeVariable",
+                                                                label = "Select Type",
+                                                                choices = NULL),
+                                    ),
+                                    column(3, offset = 1,
+                                           radioButtons(inputId = "year",
+                                                        label = "Year",
+                                                        choices = c("2019", 
+                                                                    "2020",
+                                                                    "2021",
+                                                                    "2022"),
+                                                        selected = "2019"),
+                                    )),
+                                    radioButtons(inputId = "Contiguity1",
+                                                 label = "Contiguity Method",
+                                                 choices = c("Queen" = TRUE, 
+                                                             "Rook" = FALSE),
+                                                 selected = "TRUE",
+                                                 inline = TRUE),
+                                    selectInput("MoranWeights", "Spatial Weights Style",
+                                                choices = c("W: Row standardised" = "W",
+                                                            "B: Binary" = "B",
+                                                            "C: Globally standardised" = "C",
+                                                            "U: C / no of neighbours" = "U",
+                                                            "minmax" = "minmax",
+                                                            "S: Variance" = "S"),
+                                                selected = "W"),
+                                    sliderInput(inputId = "MoranSims", 
+                                                label = "Number of Simulations:", 
+                                                min = 99, max = 499,
+                                                value = 99, step = 100),
+                                    selectInput("LisaClass", "Select Lisa Classification",
+                                                choices = c("mean" = "mean",
+                                                            "median" = "median",
+                                                            "pysal" = "pysal"),
+                                                selected = "mean"),
+                                    selectInput("localmoranstats", "Select Local Moran's Stat:",
+                                                choices = c("local moran(ii)" = "local moran(ii)",
+                                                            "expectation(eii)" = "expectation(eii)",
+                                                            "variance(var_ii)" = "variance(var_ii)",
+                                                            "std deviation(z_ii)" = "std deviation(z_ii)",
+                                                            "P-value" = "p_value"),
+                                                selected = "local moran(ii)"),
+                                    sliderInput(inputId = "MoranConf", 
+                                                label = "Select Confidence level", 
+                                                min = 0.75, max = 0.99,
+                                                value = 0.75, step = 0.05),
+                                    actionButton("MoranUpdate", "Plot Map"),
                                   ),
-                           tabPanel("Emerging Hot Spot Analysis", 
-                                    plotOutput("EHSA") %>% withSpinner(color = "#3498db"),
-                                    plotOutput("EHSABar") %>% withSpinner(color = "#3498db")),
-               )
-             )
-           )
+                                  mainPanel(
+                                    tabsetPanel(type = "tabs",
+                                                tabPanel("Global Spatial Correlation",
+                                                         fluidRow(
+                                                           column(6,
+                                                                  verbatimTextOutput("GlobalTest") %>% withSpinner(color = "#3498db"),
+                                                                  ),
+                                                           column(6,
+                                                                  verbatimTextOutput("GlobalPerm") %>% withSpinner(color = "#3498db"),
+                                                                  )
+                                                         ),
+                                                         
+                                                         plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
+                                                tabPanel("Local Spatial Correlation", 
+                                                         plotOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
+                                                         tmapOutput("LISA") %>% withSpinner(color = "#3498db")
+                                                ),
+                                    )
+                                  )
+                                )
+                                ),
+                       tabPanel("Emerging Hot Spot Analysis", 
+                                sidebarLayout(
+                                  sidebarPanel(
+                                    titlePanel("Emerging Hot Spot Analysis"),
+                                    selectInput(inputId = "categoryVariable2",
+                                                label = "Select Category",
+                                                choices = NULL),
+                                    selectInput(inputId = "typeVariable2",
+                                                label = "Select Type",
+                                                choices = NULL),
+                                    sliderInput(inputId = "EHSASims", 
+                                                label = "Number of Simulations:", 
+                                                min = 99, max = 499,
+                                                value = 99, step = 100),
+                                    sliderInput(inputId = "MoranConf2", 
+                                                label = "Select Confidence level", 
+                                                min = 0.75, max = 0.99,
+                                                value = 0.75, step = 0.05),
+                                    actionButton("MoranUpdate2", "Plot Map"),
+                                  ),
+                                  mainPanel(
+                                         plotOutput("EHSA") %>% withSpinner(color = "#3498db"),
+                                         plotOutput("EHSABar") %>% withSpinner(color = "#3498db")),
+                                   
+                                  )
+                                )
+                       ),
+           
   ),
   tabPanel("Geographically Weighted Regression",
            tabsetPanel(type = "tabs",
@@ -271,6 +326,7 @@ ui <- navbarPage(
                             )
                        )
            )
+  )
 )
 
 #========================#
@@ -311,7 +367,6 @@ server <- function(input, output, session){
   
   #Load choices for category
   unique_category <- c("all", unique(msia$category))
-  updateSelectInput(session, "categoryVariable", choices = unique_category)
   updateSelectInput(session, "categoryVariable2", choices = unique(msia$category))
   
   #Load choices for type
@@ -339,6 +394,44 @@ server <- function(input, output, session){
     return(msia_filtered)       
   })
   
+  #==========================================================
+  # EDA - LISA
+  #==========================================================
+  LISAResults <- eventReactive(input$EDAUpdate2,{
+    
+    if(nrow(msia) == 0) return(NULL)  # Exit if no data
+    
+    withProgress(message = "Filtering data...", value = 0, {
+      incProgress(0.25)
+      msia_filtered <- msia %>% filter(year %in% input$EDAyear2)
+      
+      incProgress(0.25)
+      # Computing Contiguity Spatial Weights
+      msia_filtered_nb_q <- st_contiguity(msia_filtered, queen = TRUE)
+      msia_filtered_wm_rs <- st_weights(msia_filtered_nb_q, style="W")
+      wm_q_filtered <- msia_filtered %>%
+        mutate(nb = msia_filtered_nb_q,
+               wt = msia_filtered_wm_rs,
+               .before = 1)
+      incProgress(0.25)
+      
+      lisa <- wm_q_filtered %>%
+        mutate(local_moran = local_moran(
+          .data[[input$EDAVariable2]], nb, wt, nsim = 99, zero.policy=TRUE),
+          .before = 1) %>%
+        unnest(local_moran)
+      
+      lisa <- lisa %>%
+        rename("local moran(ii)" = "ii", "expectation(eii)" = "eii",
+               "variance(var_ii)" = "var_ii", "std deviation(z_ii)" = "z_ii",
+               "p_value" = "p_ii")
+      incProgress(0.25)
+      
+    })
+    
+    return(lisa)       
+  })
+  
   
   #==========================================================
   # Filtering of data for local and global spatial
@@ -352,16 +445,12 @@ server <- function(input, output, session){
       #For Global and Local Filter
       msia_filtered <- msia %>% filter(year %in% input$year, )
       
-      if(input$categoryVariable != "all") {
-        msia_filtered <- msia_filtered %>% filter(category %in% input$categoryVariable)
-      }
-      else{
-        showModal(modalDialog(
-          title = "Message",
-          "Longer render time is expected as you have selected all categories",
-          easyClose = TRUE,)
-        )
-      }
+      showModal(modalDialog(
+        title = "Message",
+        "Longer render time is expected",
+        easyClose = TRUE,)
+      )
+      
       
       if(input$typeVariable != "all") {
         msia_filtered <- msia_filtered %>% filter(type %in% input$typeVariable)
@@ -402,7 +491,7 @@ server <- function(input, output, session){
   # EHSA
   #==========================================================   
   
-  EHSAResults <- eventReactive(input$MoranUpdate,{
+  EHSAResults <- eventReactive(input$MoranUpdate2,{
     
     if(nrow(msia) == 0) return(NULL)  # Exit if no data
     
@@ -453,7 +542,7 @@ server <- function(input, output, session){
     histogram
   })
   
-  #Render Boxpot for EDA
+  #Render Boxplot for EDA
   output$edaBoxplot <- renderPlot({
     df <- EDAResults()
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
@@ -465,12 +554,40 @@ server <- function(input, output, session){
     boxplot
   })
   
-  #Render Boxpot for EDA
+  #Render QTMPlot for EDA
   output$qtmPlot <- renderPlot({
     df <- EDAResults()
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
     return (qtm(df,input$EDAVariable))
+  })
+  
+  #Render global moran test
+  output$GlobalTest <- renderPrint({
+    df <- MsiaFiltered()$global
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    gmtest <- global_moran_test(df$crimes,
+                               df$nb,
+                               df$wt,
+                               zero.policy = TRUE,
+                               na.action=na.omit)
+    gmtest
+  })
+  
+  #Render global moran perm test
+  output$GlobalPerm <- renderPrint({
+    df <- MsiaFiltered()$global
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    gmres <-global_moran_perm(df$crimes,
+                              df$nb,
+                              df$wt,
+                              zero.policy = TRUE,
+                              nsim = as.numeric(input$MoranSims),
+                              na.action=na.omit)
+    
+    gmres
   })
   
   #Render Histogram for global spatial
@@ -510,6 +627,22 @@ server <- function(input, output, session){
       tm_text("u_rate", size = 0.7, col = "black")
     
     localMI_map 
+  })
+  
+  #Render LISA map for EDA
+  output$LISA2 <- renderTmap({
+    df <- LISAResults()
+    if(is.null(df)) return()
+    
+    lisamap <- tm_shape(df) +
+      tm_polygons() + 
+      tm_borders(alpha = 0.5) + 
+      tm_shape(df) + 
+      tm_fill(col = input$LisaClass2, title = (paste("Significance:", input$LisaClass2))) +
+      tm_borders(alpha = 0.4) +
+      tm_layout(main.title = "LISA Map", main.title.size = 1)
+    
+    lisamap 
   })
   
   #Render LISA map 
