@@ -22,10 +22,7 @@ ui <-
   navbarPage(
   title = "Abang Smith",
   fluid = TRUE,
-<<<<<<< HEAD
   theme=shinytheme("cosmo"),
-=======
->>>>>>> ba5b7c7f2697aa1a47c8fc12cb052d71c33c4f35
   id = "navbarID",
   tabPanel("EDA",
            tabsetPanel(type = "tabs",
