@@ -19,7 +19,7 @@ combined_data <- read_rds("data/rds/combined_data.rds")
 ui <- navbarPage(
   title = "Abang Smith",
   fluid = TRUE,
-  theme=shinytheme("flatly"),
+  theme=shinytheme("cosmo"),
   id = "navbarID",
   tabPanel("EDA",
            sidebarLayout(
@@ -155,13 +155,8 @@ ui <- navbarPage(
                                                 multiple = TRUE),
                                     fluidRow(column(7,
                                                     
-                                                    selectInput(inputId = "categoryVariable3",
-                                                                label = "Select Category",
-                                                                choices = NULL,
-                                                                multiple = TRUE),
-                                                    
                                                     selectInput(inputId = "typeVariable3",
-                                                                label = "Select Type",
+                                                                label = "Select Crime Type",
                                                                 choices = NULL,
                                                                 multiple = TRUE),
                                     ),
@@ -190,7 +185,8 @@ ui <- navbarPage(
                                                          plotOutput("CorrelationMatrix") %>% withSpinner(color = "#3498db")
                                                 ),
                                                 tabPanel("Model Performance", 
-                                                         plotOutput("ModelPerformance") %>% withSpinner(color = "#3498db")
+                                                         plotOutput("ModelPerformance") %>% withSpinner(color = "#3498db"),
+                                                         verbatimTextOutput("ModelPerformance2") %>% withSpinner(color = "#3498db")
                                                 ),
                                                 tabPanel("Checks", 
                                                          
@@ -223,13 +219,8 @@ ui <- navbarPage(
                                                 multiple = TRUE),
                                     fluidRow(column(7,
                                                     
-                                                    selectInput(inputId = "categoryVariable4",
-                                                                label = "Select Category",
-                                                                choices = NULL,
-                                                                multiple = TRUE),
-                                                    
                                                     selectInput(inputId = "typeVariable4",
-                                                                label = "Select Type",
+                                                                label = "Select Crime Type",
                                                                 choices = NULL,
                                                                 multiple = TRUE),
                                     ),
@@ -265,12 +256,13 @@ ui <- navbarPage(
                                     actionButton("GwrUpdate", "Plot"),
                                   ),
                                   mainPanel(
-                                    fluidRow(column(12,
+                                    fluidRow(column(6,
                                           tmapOutput("GWR") %>% withSpinner(color = "#3498db"),
-                                    ),
-                                    column(12, 
                                           tmapOutput("GWR2") %>% withSpinner(color = "#3498db"),
+                                    ),
+                                    column(6, 
                                            
+                                           verbatimTextOutput("LM") %>% withSpinner(color = "#3498db")
                                     ))
                                              ),
                                     
@@ -321,8 +313,6 @@ server <- function(input, output, session){
   unique_category <- c("all", unique(msia$category))
   updateSelectInput(session, "categoryVariable", choices = unique_category)
   updateSelectInput(session, "categoryVariable2", choices = unique(msia$category))
-  updateSelectInput(session, "categoryVariable3", choices = unique(combined_data$category))
-  updateSelectInput(session, "categoryVariable4", choices = unique(combined_data$category))
   
   #Load choices for type
   unique_type <- c("all", unique(msia$type))
@@ -585,7 +575,7 @@ server <- function(input, output, session){
     if(nrow(combined_data) == 0) return(NULL)  # Exit if no data
     
     combined_data_filtered <- combined_data %>% filter(
-      category %in% input$categoryVariable3, type %in% input$typeVariable3, year %in% input$GWRyear)
+      type %in% input$typeVariable3, year %in% input$GWRyear)
     
     return (combined_data_filtered)
       
@@ -637,6 +627,25 @@ server <- function(input, output, session){
                                   bidirectional_elimination$model)
     metric$Name <- gsub(".*\\\\([a-zA-Z0-9_]+)\\\\, \\\\model\\\\.*", "\\1", metric$Name)
     plot(metric)
+    
+  })
+  
+  output$ModelPerformance2 <- renderPrint({
+    df <- AssumptionResults()
+    
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    predictors <- input$IndependentVar
+    
+    # Run the function with the specified data and predictors
+    base_model <- run_regression(
+      data = df,
+      response = "crimes",
+      predictors = predictors
+    )
+    
+    
+    ols_regress(base_model)
     
   })
   
@@ -795,7 +804,7 @@ server <- function(input, output, session){
     if(nrow(combined_data) == 0) return(NULL)  # Exit if no data
     
     combined_data_filtered2 <- combined_data %>% filter(
-      category %in% input$categoryVariable4, type %in% input$typeVariable4, year %in% input$GWRyear2)
+      type %in% input$typeVariable4, year %in% input$GWRyear2)
     
     predictors <- input$IndependentVar2
     
@@ -857,15 +866,15 @@ server <- function(input, output, session){
                            kernel = 'gaussian', 
                            longlat = FALSE)
     
-    result <- st_as_sf(gwr.fixed$SDF) %>%
-      st_transform(crs=3168)
-    
-    return(result)
+    return(gwr.fixed)
   })
   
   output$GWR <- renderTmap({
     df <- GwrResults()
     if(is.null(df)) return()
+    
+    df <- st_as_sf(df$SDF) %>%
+      st_transform(crs=3168)
     
     tmap_mode("view")
     Local_R2 <- tm_shape(df) +
@@ -877,10 +886,21 @@ server <- function(input, output, session){
     df <- GwrResults()
     if(is.null(df)) return()
     
+    df <- st_as_sf(df$SDF) %>%
+      st_transform(crs=3168)
+    
     tmap_mode("view")
     Inequality_TV <- tm_shape(df) +
       tm_polygons(col = "inequality_TV", alpha = 0.6) +
       tm_view(set.zoom.limits = c(5, 9))
+  })
+  
+  output$LM <- renderPrint({
+    df <- GwrResults()
+    
+    if (is.null(df) || is.null(df$SDF)) return("No results found.")
+    output_text <- capture.output(print(df))
+    cat(output_text, sep = "\n")
   })
 }
 
