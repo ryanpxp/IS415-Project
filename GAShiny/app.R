@@ -270,7 +270,7 @@ ui <-
                                                 selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median"),
                                                 multiple = TRUE),
                                     fluidRow(column(7,
-                                                    
+                                                    # TODO: error for non input
                                                     selectInput(inputId = "typeVariable4",
                                                                 label = "Select Crime Type",
                                                                 choices = NULL,
@@ -986,7 +986,7 @@ server <- function(input, output, session){
                        data=combined_data_filtered2_st, 
                        approach=input$Approach, 
                        kernel=input$ComputationFunc, 
-                       adaptive=as.logical(input$Bandwidth),
+                       adaptive=as.logical(input$Bandwidth), #TODO: Remove?
                        longlat=FALSE)
     
     gwr.result <- gwr.basic(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
