@@ -182,15 +182,15 @@ ui <-
                                                                     "2022"),
                                                         selected = "2019"),
                                     )),
-                                    sliderInput(inputId = "SigLvl", 
-                                                label = "Significance Level:", 
+                                    sliderInput(inputId = "PVal2", 
+                                                label = "P-Value:", 
                                                 min = 0, max = 1,
                                                 value = 0.05, step = 0.01),
-                                    titlePanel("Bandwidth computation parameters"),
-                                    selectInput("Bandwidth", "Select Bandwidth",
-                                                choices = c("Adaptive" = TRUE,
-                                                            "Fixed" = FALSE),
-                                                selected = FALSE),
+                                    titlePanel("Computation parameters"),
+                                   # selectInput("Bandwidth", "Select Bandwidth",
+                                    #            choices = c("Adaptive" = TRUE,
+                                      #                      "Fixed" = FALSE),
+                                       #         selected = FALSE),
                                     selectInput("ComputationFunc", "Computation Function",
                                                 choices = c("Gaussian" = "gaussian",
                                                             "Exponential" = "exponential",
@@ -202,13 +202,22 @@ ui <-
                                                 choices = c("Cross Validation (CV)" = "CV",
                                                             "Akaike Information Criterion (AIC)" = "AIC"),
                                                 selected = "CV"),
-                                    selectInput("modelSelection2", "Select Model for Plotting", 
-                                                choices = c("Base Model" = "base", 
-                                                            "Forward Selection" = "forward", 
-                                                            "Backward Elimination" = "backward", 
-                                                            "Bidirectional Elimination" = "both"), 
-                                                selected = "both"),
-                                    
+                                   selectInput("Dist", "Distance metric:",
+                                               choices = c("Euclidean" = FALSE,
+                                                           "Great Circle" = TRUE),
+                                               selected = FALSE),
+                                   selectInput("modelSelection2", "Select Model for Plotting", 
+                                               choices = c("Base Model" = "base", 
+                                                           "Forward Selection" = "forward", 
+                                                           "Backward Elimination" = "backward", 
+                                                           "Bidirectional Elimination" = "both"), 
+                                               selected = "both"),
+                                   
+                                   selectInput(
+                                     inputId = "GWRColumn",
+                                     label = "Select Variable to Map (Will be updated after plot):",
+                                     choices = NULL # Will be updated dynamically
+                                   ),
                                     actionButton("GwrUpdate", "Plot"),
                                   ),
                                   mainPanel(
@@ -1010,34 +1019,24 @@ server <- function(input, output, session){
     
     predictors <- input$IndependentVar2
     
-    # Run the function with the specified data and predictors
-    base_model <- run_regression(
+    result <- run_regression(
       data = combined_data_filtered2,
       response = "crimes",
       predictors = predictors
     )
+    mlr_output <- as.data.frame(result$residuals) %>%
+      rename(`SB_MLR_RES` = `result$residuals`)
     
-    forward_selection <- run_stepwise_selection(
-      model = base_model,
-      direction = "forward",
-      p_val = input$PVal,
-      details = FALSE
-    )
-    backward_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "backward",
-      p_val = input$PVal,
-      details = FALSE
-    )
-    bidirectional_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "both",
-      p_val = input$PVal,
-      details = FALSE
-    )
-    
-    mlr_output <- as.data.frame(bidirectional_elimination$model$residuals) %>%
-      rename(`SB_MLR_RES` = `bidirectional_elimination$model$residuals`)
+    if (input$modelSelection2 %in% c("forward", "backward", "both")) {
+      result <- run_stepwise_selection(
+        model = result,
+        direction = input$modelSelection2,
+        p_val = input$PVal2, 
+        details = FALSE
+      )
+      mlr_output <- as.data.frame(result$model$residuals) %>%
+        rename(`SB_MLR_RES` = `result$model$residuals`)
+    } 
     
     residual <- data.frame(MLR_RES = rep(NA, nrow(combined_data_filtered2)))
     residual[rownames(mlr_output), "MLR_RES"] <- mlr_output$SB_MLR_RES
@@ -1048,27 +1047,47 @@ server <- function(input, output, session){
     combined_data_filtered2_st <- combined_data_filtered2_st %>%
       filter(
         !is.na(crimes) & !is.na(poverty_relative) & !is.na(poverty_absolute) &
-          !is.na(inequality) & !is.na(income_mean) & !is.na(income_median) &
+          !is.na(inequality) & !is.na(income_mean) & !is.na(income_median) & !is.na(unemployment_rate) &
           is.finite(crimes) & is.finite(poverty_relative) & is.finite(poverty_absolute) &
-          is.finite(inequality) & is.finite(income_mean) & is.finite(income_median)
+          is.finite(inequality) & is.finite(income_mean) & is.finite(income_median) & is.finite(unemployment_rate)
       )
+    formula_str <- paste("crimes ~", paste(predictors, collapse = " + "))
+    regression_formula <- as.formula(formula_str)
     
-    bw <- bw.gwr(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
-                         income_mean + income_median, 
-                       data=combined_data_filtered2_st, 
-                       approach=input$Approach, 
-                       kernel=input$ComputationFunc, 
-                       adaptive=as.logical(input$Bandwidth), #TODO: Remove?
-                       longlat=FALSE)
+    bw <- bw.gwr(
+      formula = regression_formula, 
+      data = combined_data_filtered2_st, 
+      approach = input$Approach, 
+      kernel = input$ComputationFunc, 
+      # adaptive = as.logical(input$Bandwidth), 
+      adaptive = FALSE, 
+      longlat = as.logical(input$Dist)
+    )
     
-    gwr.result <- gwr.basic(formula = crimes ~ poverty_relative + poverty_absolute + inequality +
-                             income_mean + income_median, 
-                           data=combined_data_filtered2_st, 
-                           bw=bw, 
-                           kernel = input$ComputationFunc, 
-                           longlat = FALSE)
+    # Use dynamic formula in GWR computation
+    gwr.result <- gwr.basic(
+      formula = regression_formula, 
+      data = combined_data_filtered2_st, 
+      bw = bw, 
+      kernel = input$ComputationFunc, 
+      longlat = as.logical(input$Dist)
+    )
+    
+    gwr.result$colnames <- names(gwr.result$SDF)
     
     return(gwr.result)
+  })
+  
+  observe({
+    df <- GwrResults()
+    if (!is.null(df)) {
+      updateSelectInput(
+        session,
+        inputId = "GWRColumn",
+        choices = df$colnames,
+        selected = "Local_R2" # Default selection
+      )
+    }
   })
   
   output$GWR <- renderTmap({
@@ -1077,6 +1096,7 @@ server <- function(input, output, session){
     
     df <- st_as_sf(df$SDF) %>%
       st_transform(crs=3168)
+    
     
     tmap_mode("view")
     Local_R2 <- tm_shape(df) +
@@ -1091,9 +1111,11 @@ server <- function(input, output, session){
     df <- st_as_sf(df$SDF) %>%
       st_transform(crs=3168)
     
+    selected_col <- input$GWRColumn
+    
     tmap_mode("view")
     Inequality_TV <- tm_shape(df) +
-      tm_polygons(col = "inequality_TV", alpha = 0.6) +
+      tm_polygons(col = selected_col, alpha = 0.6) +
       tm_view(set.zoom.limits = c(5, 9))
   })
   
@@ -1106,14 +1128,15 @@ server <- function(input, output, session){
   })
   
   output$Coefficient <- renderPlot({
-    df <- AssumptionResults()
     
-    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    combined_data_filtered2 <- combined_data %>% filter(
+      type %in% input$typeVariable4, year %in% input$GWRyear2)
     
+    if(nrow(combined_data_filtered2) == 0) return(NULL)  
     predictors <- input$IndependentVar2
     
     result <- run_regression(
-      data = df,
+      data = combined_data_filtered2,
       response = "crimes",
       predictors = predictors
     )
@@ -1122,13 +1145,14 @@ server <- function(input, output, session){
       result <- run_stepwise_selection(
         model = result,
         direction = input$modelSelection2,
-        p_val = input$PVal, 
+        p_val = input$PVal2, 
         details = FALSE
       )
       
       return(ggcoefstats(result$model,
                          sort = "ascending"))
     }
+    
     return(ggcoefstats(result,
                        sort = "ascending"))
     
