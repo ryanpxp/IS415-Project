@@ -1,4 +1,4 @@
-pacman::p_load(shiny, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
+pacman::p_load(shiny, shinyjs, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
              st, tidyverse, raster, tmap, tmaptools, ggplot2, spatstat,knitr,performance, see, sfdep, GWmodel,olsrr, ggstatsplot)
 
 msia <- read_rds("data/rds/msia.rds")
@@ -24,6 +24,7 @@ ui <-
   theme=shinytheme("cosmo"),
   fluid = TRUE,
   id = "navbarID",
+  useShinyjs(), #alerts
   tabPanel("EDA",
            tabsetPanel(type = "tabs",
                        tabPanel("Data Set",
@@ -98,7 +99,7 @@ ui <-
                                                             "Mean household income" = "income_mean",
                                                             "Median household income" = "income_median",
                                                             "Unemployment rate" = "unemployment_rate"),
-                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median","unemployment_rate"),
+                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median", "unemployment_rate"),
                                                 multiple = TRUE),
                                     fluidRow(column(7,
                                                     
@@ -123,6 +124,12 @@ ui <-
                                                 min = 0, max = 1,
                                                 value = 0.05, step = 0.01),
                                     
+                                    selectInput("modelSelection", "Select Model for Plotting", 
+                                                choices = c("Base Model" = "base", 
+                                                            "Forward Selection" = "forward", 
+                                                            "Backward Elimination" = "backward", 
+                                                            "Bidirectional Elimination" = "both"), 
+                                                selected = "both"),
                                     
                                     actionButton("AssumptionUpdate", "Plot"),
                                   ),
@@ -328,9 +335,9 @@ ui <-
   )
 )
 
-#========================#
-###### GWR Function ######
-#========================# 
+#==============================#
+###### GWR Helper Function ######
+#==============================# 
 run_regression <- function(data, response, predictors) {
   # Create formula from response and predictors
   formula <- as.formula(
@@ -726,6 +733,12 @@ server <- function(input, output, session){
     
     if(nrow(combined_data) == 0) return(NULL)  # Exit if no data
     
+    # Check if any crime type is selected
+    if (length(input$typeVariable3) == 0) {
+      shinyjs::alert("Please select at least one crime type.")  # Show an alert
+      return(NULL)  # Exit if no crime type selected
+    }
+    
     combined_data_filtered <- combined_data %>% filter(
       type %in% input$typeVariable3, year %in% input$GWRyear)
     
@@ -738,14 +751,22 @@ server <- function(input, output, session){
     
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
-    ggcorrmat(df[, 6:11])
+    variable_names <- c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median", "unemployment_rate")
+    
+    # Get the column indices dynamically based on the selected variables
+    selected_columns <- c(6, match(input$IndependentVar, variable_names) + 6)
+    
+    ggcorrmat(df[, selected_columns], sig.level = input$SigLvl)
   })
   
   output$ModelPerformance <- renderPlot({
     df <- AssumptionResults()
     
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
-    
+    if (length(input$IndependentVar) == 0) {
+      shinyjs::alert("Please select at least one independent variable.")  # Show an alert
+      return(NULL)  # Exit if no crime type selected
+    }
     predictors <- input$IndependentVar
     
     # Run the function with the specified data and predictors
@@ -758,19 +779,19 @@ server <- function(input, output, session){
     forward_selection <- run_stepwise_selection(
       model = base_model,
       direction = "forward",
-      p_val = 0.05, #todo
+      p_val = input$PVal, 
       details = FALSE
     )
     backward_elimination <- run_stepwise_selection(
       model = base_model,
       direction = "backward",
-      p_val = 0.05,
+      p_val = input$PVal,
       details = FALSE
     )
     bidirectional_elimination <- run_stepwise_selection(
       model = base_model,
       direction = "both",
-      p_val = 0.05,
+      p_val = input$PVal,
       details = FALSE
     )
     metric <- compare_performance(base_model, 
@@ -796,7 +817,7 @@ server <- function(input, output, session){
       predictors = predictors
     )
     
-    
+    #TODO: select model
     ols_regress(base_model)
     
   })
@@ -808,36 +829,29 @@ server <- function(input, output, session){
     
     predictors <- input$IndependentVar
     
-    # Run the function with the specified data and predictors
-    base_model <- run_regression(
+    result <- run_regression(
       data = df,
       response = "crimes",
       predictors = predictors
     )
     
-    forward_selection <- run_stepwise_selection(
-      model = base_model,
-      direction = "forward",
-      p_val = 0.05, #todo
-      details = FALSE
-    )
-    backward_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "backward",
-      p_val = 0.05,
-      details = FALSE
-    )
-    bidirectional_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "both",
-      p_val = 0.05,
-      details = FALSE
-    )
-    out <- plot(check_model(bidirectional_elimination$model, 
+    if (input$modelSelection %in% c("forward", "backward", "both")) {
+      result <- run_stepwise_selection(
+        model = result,
+        direction = input$modelSelection,
+        p_val = input$PVal, 
+        details = FALSE
+      )
+      
+      out <- plot(check_model(result$model, 
+                              panel = FALSE))
+      
+      return(out[[2]])
+    }
+    out <- plot(check_model(result, 
                             panel = FALSE))
     
-    
-    out[[2]]
+    return(out[[2]])
   })
   
   output$Normality <- renderPlot({
@@ -847,34 +861,26 @@ server <- function(input, output, session){
     
     predictors <- input$IndependentVar
     
-    # Run the function with the specified data and predictors
-    base_model <- run_regression(
+    result <- run_regression(
       data = df,
       response = "crimes",
       predictors = predictors
     )
     
-    forward_selection <- run_stepwise_selection(
-      model = base_model,
-      direction = "forward",
-      p_val = 0.05, #todo
-      details = FALSE
-    )
-    backward_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "backward",
-      p_val = 0.05,
-      details = FALSE
-    )
-    bidirectional_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "both",
-      p_val = 0.05,
-      details = FALSE
-    )
+    if (input$modelSelection %in% c("forward", "backward", "both")) {
+      result <- run_stepwise_selection(
+        model = result,
+        direction = input$modelSelection,
+        p_val = input$PVal, 
+        details = FALSE
+      )
+      
+      return(ols_plot_resid_hist(result$model) +
+               labs(title = "Normality"))
+    }
     
-    ols_plot_resid_hist(bidirectional_elimination$model) +
-      labs(title = "Normality")
+    return(ols_plot_resid_hist(result) +
+             labs(title = "Normality"))
   })
 
   output$Outliers <- renderPlot({
@@ -894,19 +900,19 @@ server <- function(input, output, session){
     forward_selection <- run_stepwise_selection(
       model = base_model,
       direction = "forward",
-      p_val = 0.05, #todo
+      p_val = input$PVal, 
       details = FALSE
     )
     backward_elimination <- run_stepwise_selection(
       model = base_model,
       direction = "backward",
-      p_val = 0.05,
+      p_val = input$PVal,
       details = FALSE
     )
     bidirectional_elimination <- run_stepwise_selection(
       model = base_model,
       direction = "both",
-      p_val = 0.05,
+      p_val = input$PVal,
       details = FALSE
     )
     
@@ -931,19 +937,19 @@ server <- function(input, output, session){
     forward_selection <- run_stepwise_selection(
       model = base_model,
       direction = "forward",
-      p_val = 0.05, #todo
+      p_val = input$PVal, 
       details = FALSE
     )
     backward_elimination <- run_stepwise_selection(
       model = base_model,
       direction = "backward",
-      p_val = 0.05,
+      p_val = input$PVal,
       details = FALSE
     )
     bidirectional_elimination <- run_stepwise_selection(
       model = base_model,
       direction = "both",
-      p_val = 0.05,
+      p_val = input$PVal,
       details = FALSE
     )
     
