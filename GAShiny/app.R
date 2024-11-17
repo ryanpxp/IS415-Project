@@ -224,16 +224,17 @@ ui <-
                                     actionButton("GwrUpdate", "Plot"),
                                   ),
                                   mainPanel(
-                                    fluidRow(column(6,
-                                          tmapOutput("GWR") %>% withSpinner(color = "#3498db"),
-                                          tmapOutput("GWR2") %>% withSpinner(color = "#3498db"),
-                                          plotOutput("Coefficient") %>% withSpinner(color = "#3498db"),
-                                          
-                                    ),
-                                    column(6, 
-                                           
-                                           verbatimTextOutput("LM") %>% withSpinner(color = "#3498db")
-                                    ))
+                                    tabsetPanel(type = "tabs",
+                                                tabPanel("Map", 
+                                                         tmapOutput("GWR") %>% withSpinner(color = "#3498db"),
+                                                         tmapOutput("GWR2") %>% withSpinner(color = "#3498db"),
+                                                ),
+                                                tabPanel("Stats", 
+                                                         plotOutput("Coefficient") %>% withSpinner(color = "#3498db"),
+                                                         verbatimTextOutput("LM") %>% withSpinner(color = "#3498db")
+                                                )
+                                                ),
+                                    
                                              ),
                                     
                                 )
