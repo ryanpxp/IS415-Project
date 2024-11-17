@@ -59,9 +59,7 @@ ui <-
                                   sidebarPanel(
                                     titlePanel("LISA"),
                                     selectInput(inputId = "EDAVariable2", "Select EDA variable for LISA",
-                                                choices = c("Participation rate" = "p_rate",
-                                                            "Unemployment rate" = "u_rate",
-                                                            "Crimes" = "crimes")),
+                                                choices = NULL),
                                     selectInput("LisaClass2", "Select Lisa Classification",
                                                 choices = c("mean" = "mean",
                                                             "median" = "median",
@@ -364,8 +362,31 @@ run_stepwise_selection <- function(model, direction = "forward", p_val = 0.05, d
 #========================# 
 
 server <- function(input, output, session){
-  #Load relationshipVariable based on year selected
+  #Load EDAVariable based on year selected
+  filtered_EDA <- reactive({
+    req(input$EDAyear2)
+    if (input$EDAyear2 %in% c("2019", "2022")) {
+      unique_relationship <- c("Income Inequality (Gini Coefficient)" = "gini",
+                               "Income Mean" = "income_mean",
+                               "Income Median" = "income_median",
+                               "Poverty Absolute" = "poverty_absolute",
+                               "Poverty Relative" = "poverty_relative",
+                               "Unemployment rate" = "u_rate")
+    } else {
+      unique_relationship <- c("Participation rate" = "p_rate",
+                               "Unemployment rate" = "u_rate",
+                               "Crimes" = "crimes")
+    }
+    unique_relationship
+    
+  })
   
+  # Update district input based on selected province
+  observe({
+    updateSelectInput(session, "EDAVariable2", choices = filtered_EDA())
+  })
+  
+  #Load relationshipVariable based on year selected
   filtered_relationship <- reactive({
     req(input$year)
     if (input$year %in% c("2019", "2022")) {
@@ -657,8 +678,6 @@ server <- function(input, output, session){
     df <- MsiaFiltered()$lisa
     
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
-    
-    tmap_mode("plot")
     # Map creation using tmap
     localMI_map <- tm_shape(df) +
       tm_fill(col = input$localmoranstats, 
