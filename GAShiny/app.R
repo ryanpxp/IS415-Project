@@ -1,7 +1,7 @@
 pacman::p_load(shiny, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
              st, tidyverse, raster, tmap, tmaptools, ggplot2, spatstat,knitr,performance, see, sfdep, GWmodel,olsrr, ggstatsplot)
 
-msia <- read_rds("data/rds/msia.rds")
+msia <- read_rds("data/rds/msia3.rds")
 msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp", 
                    layer = "mys_admbnda_adm2_unhcr_20210211") %>%
   st_as_sf(coords =c(
@@ -17,8 +17,6 @@ combined_data <- read_rds("data/rds/combined_data1.rds")
 #========================#  
 
 ui <-
-  tagList(
-  shinythemes::themeSelector(),
   navbarPage(
   title = "Abang Smith",
   theme=shinytheme("cosmo"),
@@ -229,6 +227,9 @@ ui <-
                                                     selectInput(inputId = "categoryVariable",
                                                                 label = "Select Category",
                                                                 choices = c("all","assault","property")),
+                                                    selectInput(inputId = "relationshipVariable",
+                                                                label = "Map relationship to",
+                                                                choices = NULL),
                                     ),
                                     column(3, offset = 1,
                                            radioButtons(inputId = "year",
@@ -289,7 +290,7 @@ ui <-
                                                          
                                                          plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
                                                 tabPanel("Local Spatial Correlation", 
-                                                         plotOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
+                                                         tmapOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
                                                          tmapOutput("LISA") %>% withSpinner(color = "#3498db")
                                                 ),
                                     )
@@ -325,8 +326,8 @@ ui <-
            ),
            
   ),
-  )
 )
+
 
 #========================#
 ###### GWR Function ######
@@ -363,6 +364,28 @@ run_stepwise_selection <- function(model, direction = "forward", p_val = 0.05, d
 #========================# 
 
 server <- function(input, output, session){
+  #Load relationshipVariable based on year selected
+  
+  filtered_relationship <- reactive({
+    req(input$year)
+    if (input$year %in% c("2019", "2022")) {
+      unique_relationship <- c("Income Inequality (Gini Coefficient)" = "gini",
+                               "Income Mean" = "income_mean",
+                               "Income Median" = "income_median",
+                               "Poverty Absolute" = "poverty_absolute",
+                               "Poverty Relative" = "poverty_relative",
+                               "Unemployment rate" = "u_rate")
+    } else {
+      unique_relationship <- c("Unemployment rate" = "u_rate")
+    }
+    unique_relationship
+    
+  })
+  
+  # Update district input based on selected province
+  observe({
+    updateSelectInput(session, "relationshipVariable", choices = filtered_relationship())
+  })
   
   #Load typeVariable2 based on categoryVariable2
   #Load choices for type
@@ -630,7 +653,7 @@ server <- function(input, output, session){
   
   
   #Render local Moran I statistics
-  output$LocalMoranMap <- renderPlot({
+  output$LocalMoranMap <- renderTmap({
     df <- MsiaFiltered()$lisa
     
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
@@ -643,7 +666,7 @@ server <- function(input, output, session){
               palette = "RdBu", 
               title = input$localmoranstats) +
       tm_borders(alpha = 0.5) +
-      tm_text("u_rate", size = 0.7, col = "black")
+      tm_text(input$relationshipVariable, size = 0.7, col = "black")
     
     localMI_map 
   })
@@ -677,7 +700,7 @@ server <- function(input, output, session){
       tm_borders(alpha = 0.5) + 
       tm_shape(lisa_sig) + 
       tm_fill(col = input$LisaClass, title = (paste("Significance:", input$LisaClass))) +
-      tm_text("u_rate", size = 0.6, col = "black") +
+      tm_text(input$relationshipVariable, size = 0.6, col = "black") +
       tm_borders(alpha = 0.4) +
       tm_layout(main.title = "LISA map of crimes", main.title.size = 1)
     
