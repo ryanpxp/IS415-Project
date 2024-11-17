@@ -10,7 +10,7 @@ msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp",
   st_transform(crs = 3168)
 set.seed(2321)
 
-combined_data <- read_rds("data/rds/combined_data.rds")
+combined_data <- read_rds("data/rds/combined_data1.rds")
 
 #========================#
 ###### Shiny UI ######
@@ -96,8 +96,9 @@ ui <-
                                                             "Poverty absolute" = "poverty_absolute",
                                                             "Income inequality" = "inequality",
                                                             "Mean household income" = "income_mean",
-                                                            "Median household income" = "income_median"),
-                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median"),
+                                                            "Median household income" = "income_median",
+                                                            "Unemployment rate" = "unemployment_rate"),
+                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median","unemployment_rate"),
                                                 multiple = TRUE),
                                     fluidRow(column(7,
                                                     
@@ -160,8 +161,9 @@ ui <-
                                                             "Poverty absolute" = "poverty_absolute",
                                                             "Income inequality" = "inequality",
                                                             "Mean household income" = "income_mean",
-                                                            "Median household income" = "income_median"),
-                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median"),
+                                                            "Median household income" = "income_median",
+                                                            "Unemployment rate" = "unemployment_rate"),
+                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median","unemployment_rate"),
                                                 multiple = TRUE),
                                     fluidRow(column(7,
                                                     # TODO: error for non input
