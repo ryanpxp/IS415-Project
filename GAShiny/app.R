@@ -1,7 +1,7 @@
 pacman::p_load(shiny, shinyjs, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
              st, tidyverse, raster, tmap, tmaptools, ggplot2, spatstat,knitr,performance, see, sfdep, GWmodel,olsrr, ggstatsplot)
 
-msia <- read_rds("data/rds/msia.rds")
+msia <- read_rds("data/rds/msia3.rds")
 msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp", 
                    layer = "mys_admbnda_adm2_unhcr_20210211") %>%
   st_as_sf(coords =c(
@@ -17,8 +17,6 @@ combined_data <- read_rds("data/rds/combined_data1.rds")
 #========================#  
 
 ui <-
-  tagList(
-  shinythemes::themeSelector(),
   navbarPage(
   title = "Abang Smith",
   theme=shinytheme("cosmo"),
@@ -62,9 +60,7 @@ ui <-
                                   sidebarPanel(
                                     titlePanel("LISA"),
                                     selectInput(inputId = "EDAVariable2", "Select EDA variable for LISA",
-                                                choices = c("Participation rate" = "p_rate",
-                                                            "Unemployment rate" = "u_rate",
-                                                            "Crimes" = "crimes")),
+                                                choices = NULL),
                                     selectInput("LisaClass2", "Select Lisa Classification",
                                                 choices = c("mean" = "mean",
                                                             "median" = "median",
@@ -236,6 +232,9 @@ ui <-
                                                     selectInput(inputId = "categoryVariable",
                                                                 label = "Select Category",
                                                                 choices = c("all","assault","property")),
+                                                    selectInput(inputId = "relationshipVariable",
+                                                                label = "Map relationship to",
+                                                                choices = NULL),
                                     ),
                                     column(3, offset = 1,
                                            radioButtons(inputId = "year",
@@ -296,7 +295,7 @@ ui <-
                                                          
                                                          plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
                                                 tabPanel("Local Spatial Correlation", 
-                                                         plotOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
+                                                         tmapOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
                                                          tmapOutput("LISA") %>% withSpinner(color = "#3498db")
                                                 ),
                                     )
@@ -332,12 +331,12 @@ ui <-
            ),
            
   ),
-  )
 )
 
 #==============================#
 ###### GWR Helper Function ######
 #==============================# 
+
 run_regression <- function(data, response, predictors) {
   # Create formula from response and predictors
   formula <- as.formula(
@@ -370,6 +369,51 @@ run_stepwise_selection <- function(model, direction = "forward", p_val = 0.05, d
 #========================# 
 
 server <- function(input, output, session){
+  #Load EDAVariable based on year selected
+  filtered_EDA <- reactive({
+    req(input$EDAyear2)
+    if (input$EDAyear2 %in% c("2019", "2022")) {
+      unique_relationship <- c("Income Inequality (Gini Coefficient)" = "gini",
+                               "Income Mean" = "income_mean",
+                               "Income Median" = "income_median",
+                               "Poverty Absolute" = "poverty_absolute",
+                               "Poverty Relative" = "poverty_relative",
+                               "Unemployment rate" = "u_rate")
+    } else {
+      unique_relationship <- c("Participation rate" = "p_rate",
+                               "Unemployment rate" = "u_rate",
+                               "Crimes" = "crimes")
+    }
+    unique_relationship
+    
+  })
+  
+  # Update district input based on selected province
+  observe({
+    updateSelectInput(session, "EDAVariable2", choices = filtered_EDA())
+  })
+  
+  #Load relationshipVariable based on year selected
+  filtered_relationship <- reactive({
+    req(input$year)
+    if (input$year %in% c("2019", "2022")) {
+      unique_relationship <- c("Income Inequality (Gini Coefficient)" = "gini",
+                               "Income Mean" = "income_mean",
+                               "Income Median" = "income_median",
+                               "Poverty Absolute" = "poverty_absolute",
+                               "Poverty Relative" = "poverty_relative",
+                               "Unemployment rate" = "u_rate")
+    } else {
+      unique_relationship <- c("Unemployment rate" = "u_rate")
+    }
+    unique_relationship
+    
+  })
+  
+  # Update district input based on selected province
+  observe({
+    updateSelectInput(session, "relationshipVariable", choices = filtered_relationship())
+  })
   
   #Load typeVariable2 based on categoryVariable2
   #Load choices for type
@@ -637,12 +681,10 @@ server <- function(input, output, session){
   
   
   #Render local Moran I statistics
-  output$LocalMoranMap <- renderPlot({
+  output$LocalMoranMap <- renderTmap({
     df <- MsiaFiltered()$lisa
     
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
-    
-    tmap_mode("plot")
     # Map creation using tmap
     localMI_map <- tm_shape(df) +
       tm_fill(col = input$localmoranstats, 
@@ -650,7 +692,7 @@ server <- function(input, output, session){
               palette = "RdBu", 
               title = input$localmoranstats) +
       tm_borders(alpha = 0.5) +
-      tm_text("u_rate", size = 0.7, col = "black")
+      tm_text(input$relationshipVariable, size = 0.7, col = "black")
     
     localMI_map 
   })
@@ -684,7 +726,7 @@ server <- function(input, output, session){
       tm_borders(alpha = 0.5) + 
       tm_shape(lisa_sig) + 
       tm_fill(col = input$LisaClass, title = (paste("Significance:", input$LisaClass))) +
-      tm_text("u_rate", size = 0.6, col = "black") +
+      tm_text(input$relationshipVariable, size = 0.6, col = "black") +
       tm_borders(alpha = 0.4) +
       tm_layout(main.title = "LISA map of crimes", main.title.size = 1)
     
@@ -810,15 +852,26 @@ server <- function(input, output, session){
     
     predictors <- input$IndependentVar
     
-    # Run the function with the specified data and predictors
-    base_model <- run_regression(
+    
+    result <- run_regression(
       data = df,
       response = "crimes",
       predictors = predictors
     )
     
-    #TODO: select model
-    ols_regress(base_model)
+    if (input$modelSelection %in% c("forward", "backward", "both")) {
+      result <- run_stepwise_selection(
+        model = result,
+        direction = input$modelSelection,
+        p_val = input$PVal, 
+        details = FALSE
+      )
+      
+      return(ols_regress(result$model))
+    }
+    
+    return(ols_regress(result))
+    
     
   })
   
@@ -890,34 +943,25 @@ server <- function(input, output, session){
     
     predictors <- input$IndependentVar
     
-    # Run the function with the specified data and predictors
-    base_model <- run_regression(
+    result <- run_regression(
       data = df,
       response = "crimes",
       predictors = predictors
     )
     
-    forward_selection <- run_stepwise_selection(
-      model = base_model,
-      direction = "forward",
-      p_val = input$PVal, 
-      details = FALSE
-    )
-    backward_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "backward",
-      p_val = input$PVal,
-      details = FALSE
-    )
-    bidirectional_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "both",
-      p_val = input$PVal,
-      details = FALSE
-    )
-    
-    plot(check_outliers(bidirectional_elimination$model,
-                        method = "cook")) + labs(title = "Outliers")
+    if (input$modelSelection %in% c("forward", "backward", "both")) {
+      result <- run_stepwise_selection(
+        model = result,
+        direction = input$modelSelection,
+        p_val = input$PVal, 
+        details = FALSE
+      )
+      
+      return(plot(check_outliers(result$model,
+                                 method = "cook")) + labs(title = "Outliers"))
+    }
+    return(plot(check_outliers(result,
+                               method = "cook")) + labs(title = "Outliers"))
   })
   
   output$Multicollinearity <- renderPlot({
@@ -927,34 +971,27 @@ server <- function(input, output, session){
     
     predictors <- input$IndependentVar
     
-    # Run the function with the specified data and predictors
-    base_model <- run_regression(
+    result <- run_regression(
       data = df,
       response = "crimes",
       predictors = predictors
     )
     
-    forward_selection <- run_stepwise_selection(
-      model = base_model,
-      direction = "forward",
-      p_val = input$PVal, 
-      details = FALSE
-    )
-    backward_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "backward",
-      p_val = input$PVal,
-      details = FALSE
-    )
-    bidirectional_elimination <- run_stepwise_selection(
-      model = base_model,
-      direction = "both",
-      p_val = input$PVal,
-      details = FALSE
-    )
+    if (input$modelSelection %in% c("forward", "backward", "both")) {
+      result <- run_stepwise_selection(
+        model = result,
+        direction = input$modelSelection,
+        p_val = input$PVal, 
+        details = FALSE
+      )
+      
+      return(plot(check_collinearity(result$model)) + 
+               theme(axis.text.x = element_text(angle = 45, hjust = 1)))
+    }
+    return(plot(check_collinearity(result)) + 
+             theme(axis.text.x = element_text(angle = 45, hjust = 1)))
     
-    plot(check_collinearity(bidirectional_elimination$model)) + 
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    
   })
   
   GwrResults <- eventReactive(input$GwrUpdate,{
