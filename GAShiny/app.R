@@ -202,7 +202,12 @@ ui <-
                                                 choices = c("Cross Validation (CV)" = "CV",
                                                             "Akaike Information Criterion (AIC)" = "AIC"),
                                                 selected = "CV"),
-                                    
+                                    selectInput("modelSelection2", "Select Model for Plotting", 
+                                                choices = c("Base Model" = "base", 
+                                                            "Forward Selection" = "forward", 
+                                                            "Backward Elimination" = "backward", 
+                                                            "Bidirectional Elimination" = "both"), 
+                                                selected = "both"),
                                     
                                     actionButton("GwrUpdate", "Plot"),
                                   ),
@@ -210,6 +215,8 @@ ui <-
                                     fluidRow(column(6,
                                           tmapOutput("GWR") %>% withSpinner(color = "#3498db"),
                                           tmapOutput("GWR2") %>% withSpinner(color = "#3498db"),
+                                          plotOutput("Coefficient") %>% withSpinner(color = "#3498db"),
+                                          
                                     ),
                                     column(6, 
                                            
@@ -1013,19 +1020,19 @@ server <- function(input, output, session){
     forward_selection <- run_stepwise_selection(
       model = base_model,
       direction = "forward",
-      p_val = 0.05, #todo
+      p_val = input$PVal,
       details = FALSE
     )
     backward_elimination <- run_stepwise_selection(
       model = base_model,
       direction = "backward",
-      p_val = 0.05,
+      p_val = input$PVal,
       details = FALSE
     )
     bidirectional_elimination <- run_stepwise_selection(
       model = base_model,
       direction = "both",
-      p_val = 0.05,
+      p_val = input$PVal,
       details = FALSE
     )
     
@@ -1096,6 +1103,36 @@ server <- function(input, output, session){
     if (is.null(df) || is.null(df$SDF)) return("No results found.")
     output_text <- capture.output(print(df))
     cat(output_text, sep = "\n")
+  })
+  
+  output$Coefficient <- renderPlot({
+    df <- AssumptionResults()
+    
+    if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    
+    predictors <- input$IndependentVar2
+    
+    result <- run_regression(
+      data = df,
+      response = "crimes",
+      predictors = predictors
+    )
+    
+    if (input$modelSelection2 %in% c("forward", "backward", "both")) {
+      result <- run_stepwise_selection(
+        model = result,
+        direction = input$modelSelection2,
+        p_val = input$PVal, 
+        details = FALSE
+      )
+      
+      return(ggcoefstats(result$model,
+                         sort = "ascending"))
+    }
+    return(ggcoefstats(result,
+                       sort = "ascending"))
+    
+    
   })
 }
 
