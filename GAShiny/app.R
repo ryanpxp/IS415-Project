@@ -1,7 +1,10 @@
 pacman::p_load(shiny, shinyjs, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
              st, tidyverse, raster, tmap, tmaptools, ggplot2, spatstat,knitr,performance, see, sfdep, GWmodel,olsrr, ggstatsplot)
 
-msia <- read_rds("data/rds/msia3.rds")
+msia19 <- read_rds("data/rds/wm_q_19.rds")
+msia20 <- read_rds("data/rds/wm_q_20.rds")
+msia21 <- read_rds("data/rds/wm_q_21.rds")
+msia22 <- read_rds("data/rds/wm_q_22.rds")
 msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp", 
                    layer = "mys_admbnda_adm2_unhcr_20210211") %>%
   st_as_sf(coords =c(
@@ -428,9 +431,9 @@ server <- function(input, output, session){
     req(input$categoryVariable2)
     
     if (input$categoryVariable2 == "all") {
-      msia
+      msia19
     } else {
-      subset(msia, category == input$categoryVariable2)
+      subset(msia19, category == input$categoryVariable2)
     }
   })
   
@@ -456,12 +459,14 @@ server <- function(input, output, session){
   #==========================================================
   EDAResults <- eventReactive(input$EDAUpdate,{
     
-    if(nrow(msia) == 0) return(NULL)  # Exit if no data
-    
     withProgress(message = "Filtering data...", value = 0, {
       incProgress(0.5)
-      msia_filtered <- msia %>% filter(year %in% input$EDAyear)
-      
+      msia_filtered <- switch(input$EDAyear,
+                     "2019" = msia19,
+                     "2020" = msia20,
+                     "2021" = msia21,
+                     "2022" = msia22
+      )
       incProgress(0.5)
       
     })
@@ -474,20 +479,15 @@ server <- function(input, output, session){
   #==========================================================
   LISAResults <- eventReactive(input$EDAUpdate2,{
     
-    if(nrow(msia) == 0) return(NULL)  # Exit if no data
-    
     withProgress(message = "Filtering data...", value = 0, {
       incProgress(0.25)
-      msia_filtered <- msia %>% filter(year %in% input$EDAyear2)
+      wm_q_filtered <- switch(input$EDAyear,
+                              "2019" = msia19,
+                              "2020" = msia20,
+                              "2021" = msia21,
+                              "2022" = msia22
+      )
       
-      incProgress(0.25)
-      # Computing Contiguity Spatial Weights
-      msia_filtered_nb_q <- st_contiguity(msia_filtered, queen = TRUE)
-      msia_filtered_wm_rs <- st_weights(msia_filtered_nb_q, style="W")
-      wm_q_filtered <- msia_filtered %>%
-        mutate(nb = msia_filtered_nb_q,
-               wt = msia_filtered_wm_rs,
-               .before = 1)
       incProgress(0.25)
       
       lisa <- wm_q_filtered %>%
@@ -495,6 +495,8 @@ server <- function(input, output, session){
           .data[[input$EDAVariable2]], nb, wt, nsim = 99, zero.policy=TRUE),
           .before = 1) %>%
         unnest(local_moran)
+      
+      incProgress(0.25)
       
       lisa <- lisa %>%
         rename("local moran(ii)" = "ii", "expectation(eii)" = "eii",
@@ -513,41 +515,29 @@ server <- function(input, output, session){
   #==========================================================   
   
   MsiaFiltered <- eventReactive(input$MoranUpdate,{
-    
-    if(nrow(msia) == 0) return(NULL)  # Exit if no data
-    
     withProgress(message = "Filtering data...", value = 0, {
       #For Global and Local Filter
-      msia_filtered <- msia %>% filter(year %in% input$year, )
-      
-      if(input$categoryVariable != "all") {
-        msia_filtered <- msia_filtered %>% filter(category %in% input$categoryVariable)
-        incProgress(0.5)
+      if (input$year %in% c("2019")){
+        msia_filtered <- msia19
+      }
+      else if(input$year %in% c("2020")){
+        msia_filtered <- msia20
+      }
+      else if(input$year %in% c("2021")){
+        msia_filtered <- msia21
       }
       else{
-        showModal(modalDialog(
-          title = "Message",
-          "Longer render time is expected as you have selected all categories",
-          easyClose = TRUE,)
-        )
-        incProgress(0.5)
+        msia_filtered <- msia22
       }
       
+      incProgress(0.5)
       
-      # Computing Contiguity Spatial Weights
-      msia_filtered_nb_q <- st_contiguity(msia_filtered, queen = input$Contiguity1)
-      msia_filtered_wm_rs <- st_weights(msia_filtered_nb_q, style=input$MoranWeights)
-      wm_q_filtered <- msia_filtered %>%
-        mutate(nb = msia_filtered_nb_q,
-               wt = msia_filtered_wm_rs,
-               .before = 1)
-      incProgress(0.25)
-      
-      lisa <- wm_q_filtered %>%
+      lisa <- msia_filtered %>%
         mutate(local_moran = local_moran(
           crimes, nb, wt, nsim = as.numeric(input$MoranSims), zero.policy=TRUE),
           .before = 1) %>%
         unnest(local_moran)
+      incProgress(0.25)
       
       lisa <- lisa %>%
         rename("local moran(ii)" = "ii", "expectation(eii)" = "eii",
@@ -558,7 +548,7 @@ server <- function(input, output, session){
       
     })
     results <- list(
-      global = wm_q_filtered,
+      global = msia_filtered,
       lisa = lisa
     )
     return (results)
