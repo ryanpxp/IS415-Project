@@ -2,4 +2,4 @@
 title: "Poster"
 ---
 
-![](images/G1T9_poster.jpg)
+![](images/G1T9 poster.png)
