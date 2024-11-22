@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -111,8 +145,24 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#packages" id="toc-packages" class="nav-link active" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">Importing the data</a></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">Data Wrangling</a>
+  <ul class="collapse">
+  <li><a href="#renaming-allall-rows" id="toc-renaming-allall-rows" class="nav-link" data-scroll-target="#renaming-allall-rows">Renaming “all”/“All” rows</a></li>
+  <li><a href="#adding-year-column" id="toc-adding-year-column" class="nav-link" data-scroll-target="#adding-year-column">Adding year column</a></li>
+  <li><a href="#renaming-mismatch-districts" id="toc-renaming-mismatch-districts" class="nav-link" data-scroll-target="#renaming-mismatch-districts">Renaming mismatch districts</a></li>
+  <li><a href="#left-join" id="toc-left-join" class="nav-link" data-scroll-target="#left-join">Left Join</a></li>
+  </ul></li>
+  <li><a href="#combining-crime-type" id="toc-combining-crime-type" class="nav-link" data-scroll-target="#combining-crime-type">Combining Crime Type</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -136,9 +186,352 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Data wrangle</p>
+<p>This serves as a guide on how we did data wrangling on the different data sets. Initially the Shiny application runs fine locally with the initial rds that we saved and loaded. However upon deploying we found that the rds file was too big for the Shiny application so additional steps had to be taken to reduce the rds file.</p>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfdep, tmap, tidyverse, knitr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<ul>
+<li><p><strong>Income Inequality Data:</strong> Household income inequality by district (<a href="https://data.gov.my/data-catalogue/hh_inequality_district" class="uri">https://data.gov.my/data-catalogue/hh_inequality_district</a>)</p></li>
+<li><p><strong>Annual Principal Labour Force Statistics by District:</strong> Annual principal labour force statistics including unemployment and participation rates (<a href="https://data.gov.my/data-catalogue/lfs_district" class="uri">https://data.gov.my/data-catalogue/lfs_district</a>)</p></li>
+<li><p><strong>Crime Data:</strong> Crime rates by district (<a href="https://data.gov.my/data-catalogue/crime_district" class="uri">https://data.gov.my/data-catalogue/crime_district</a>)</p></li>
+<li><p><strong>Malaysia - Subnational Administrative Boundaries: (</strong><a href="https://data.humdata.org/dataset/cod-ab-mys?" class="uri">https://data.humdata.org/dataset/cod-ab-mys?</a>)</p></li>
+<li><p><strong>Household Income Data:</strong> Household income by district (<a href="https://data.gov.my/data-catalogue/hh_income_district" class="uri">https://data.gov.my/data-catalogue/hh_income_district</a>)</p></li>
+<li><p><strong>Household Poverty Data:</strong> Household Poverty by district (<a href="https://data.gov.my/data-catalogue/hh_poverty_district" class="uri">https://data.gov.my/data-catalogue/hh_poverty_district</a>)</p></li>
+</ul>
+</section>
+<section id="importing-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="importing-the-data">Importing the data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>crime <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/crime_district.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>income <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/hh_inequality.csv"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>household <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/hh_income_district.csv"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>poverty <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/hh_poverty_district.csv"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>labour <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/lfs_district.csv"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>msia_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial/mys_adm_unhcr_20210211_shp"</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">layer =</span> <span class="st">"mys_admbnda_adm2_unhcr_20210211"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span><span class="fu">c</span>(</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3168</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling">Data Wrangling</h2>
+<section id="renaming-allall-rows" class="level3">
+<h3 class="anchored" data-anchor-id="renaming-allall-rows">Renaming “all”/“All” rows</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>excluded_column <span class="ot">&lt;-</span> <span class="st">"date"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>crime <span class="ot">&lt;-</span> crime[<span class="sc">!</span><span class="fu">apply</span>(crime[, <span class="sc">!</span><span class="fu">names</span>(crime) <span class="sc">%in%</span> excluded_column] <span class="sc">==</span> <span class="st">"all"</span>, <span class="dv">1</span>, any), ]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>crime <span class="ot">&lt;-</span> crime[<span class="sc">!</span><span class="fu">apply</span>(crime[, <span class="sc">!</span><span class="fu">names</span>(crime) <span class="sc">%in%</span> excluded_column] <span class="sc">==</span> <span class="st">"All"</span>, <span class="dv">1</span>, any), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adding-year-column" class="level3">
+<h3 class="anchored" data-anchor-id="adding-year-column">Adding year column</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>crime <span class="ot">&lt;-</span> crime <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(date))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>income <span class="ot">&lt;-</span> income <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(date))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>labour <span class="ot">&lt;-</span> labour <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(date))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>household <span class="ot">&lt;-</span> household <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(date))</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>poverty <span class="ot">&lt;-</span> poverty <span class="sc">%&gt;%</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(date))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="renaming-mismatch-districts" class="level3">
+<h3 class="anchored" data-anchor-id="renaming-mismatch-districts">Renaming mismatch districts</h3>
+<section id="crime" class="level4">
+<h4 class="anchored" data-anchor-id="crime">Crime</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>crime <span class="ot">&lt;-</span> crime <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">district =</span> <span class="fu">recode</span>(district,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Johor Bahru mappings</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Iskandar Puteri"</span> <span class="ot">=</span> <span class="st">"Johor Bahru"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Nusajaya"</span> <span class="ot">=</span> <span class="st">"Johor Bahru"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Johor Bahru Selatan"</span> <span class="ot">=</span> <span class="st">"Johor Bahru"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Johor Bahru Utara"</span> <span class="ot">=</span> <span class="st">"Johor Bahru"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Seri Alam"</span> <span class="ot">=</span> <span class="st">"Johor Bahru"</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Bandar Baharu correction</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Bandar Bharu"</span> <span class="ot">=</span> <span class="st">"Bandar Baharu"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># WP Kuala Lumpur mappings</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Brickfields"</span> <span class="ot">=</span> <span class="st">"WP. Kuala Lumpur"</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Cheras"</span> <span class="ot">=</span> <span class="st">"WP. Kuala Lumpur"</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dang Wangi"</span> <span class="ot">=</span> <span class="st">"WP. Kuala Lumpur"</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Sentul"</span> <span class="ot">=</span> <span class="st">"WP. Kuala Lumpur"</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Wangsa Maju"</span> <span class="ot">=</span> <span class="st">"WP. Kuala Lumpur"</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Seremban correction</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Nilai"</span> <span class="ot">=</span> <span class="st">"Seremban"</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Seberang Perai corrections</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Seberang Perai Selatan"</span> <span class="ot">=</span> <span class="st">"S.P.Selatan"</span>,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Seberang Perai Tengah"</span> <span class="ot">=</span> <span class="st">"S.P. Tengah"</span>,</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Seberang Perai Utara"</span> <span class="ot">=</span> <span class="st">"S.P. Utara"</span>,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Cameron Highlands correction</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Cameron Highland"</span> <span class="ot">=</span> <span class="st">"Cameron Highlands"</span>,</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Lipis correction</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Kuala Lipis"</span> <span class="ot">=</span> <span class="st">"Lipis"</span>,</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Kinta mappings</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Batu Gajah"</span> <span class="ot">=</span> <span class="st">"Kinta"</span>,</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Ipoh"</span> <span class="ot">=</span> <span class="st">"Kinta"</span>,</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Ulu Perak mappings</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Gerik"</span> <span class="ot">=</span> <span class="st">"Ulu Perak"</span>,</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Pengkalan Hulu"</span> <span class="ot">=</span> <span class="st">"Ulu Perak"</span>,</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Manjung correction</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Manjung"</span> <span class="ot">=</span> <span class="st">"Manjung (Dinding)"</span>,</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Larut Dan Matang mappings</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Selama"</span> <span class="ot">=</span> <span class="st">"Larut Dan Matang"</span>,</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Taiping"</span> <span class="ot">=</span> <span class="st">"Larut Dan Matang"</span>,</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Kuala Kangsar correction</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Sungai Siput"</span> <span class="ot">=</span> <span class="st">"Kuala Kangsar"</span>,</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Batang Padang mappings</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Tanjong Malim"</span> <span class="ot">=</span> <span class="st">"Batang Padang"</span>,</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Tapah"</span> <span class="ot">=</span> <span class="st">"Batang Padang"</span>,</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Perlis mappings</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Arau"</span> <span class="ot">=</span> <span class="st">"Perlis"</span>,</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Kangar"</span> <span class="ot">=</span> <span class="st">"Perlis"</span>,</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Padang Besar"</span> <span class="ot">=</span> <span class="st">"Perlis"</span>,</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Kinabatangan correction</span></span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Kota Kinabatangan"</span> <span class="ot">=</span> <span class="st">"Kinabatangan"</span>,</span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Samarahan correction</span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Kota Samarahan"</span> <span class="ot">=</span> <span class="st">"Samarahan"</span>,</span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Mukah correction</span></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Matu Daro"</span> <span class="ot">=</span> <span class="st">"Mukah"</span>,</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Kuching correction</span></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Padawan"</span> <span class="ot">=</span> <span class="st">"Kuching"</span>,</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Gombak correction</span></span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Ampang Jaya"</span> <span class="ot">=</span> <span class="st">"Gombak"</span>,</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Ulu Langat correction</span></span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Kajang"</span> <span class="ot">=</span> <span class="st">"Ulu Langat"</span>,</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Ulu Selangor correction</span></span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Hulu Selangor"</span> <span class="ot">=</span> <span class="st">"Ulu Selangor"</span>,</span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Klang mappings</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Klang Selatan"</span> <span class="ot">=</span> <span class="st">"Klang"</span>,</span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Klang Utara"</span> <span class="ot">=</span> <span class="st">"Klang"</span>,</span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Petaling mappings</span></span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Petaling Jaya"</span> <span class="ot">=</span> <span class="st">"Petaling"</span>,</span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Serdang"</span> <span class="ot">=</span> <span class="st">"Petaling"</span>,</span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Sg. Buloh"</span> <span class="ot">=</span> <span class="st">"Petaling"</span>,</span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Shah Alam"</span> <span class="ot">=</span> <span class="st">"Petaling"</span>,</span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Subang Jaya"</span> <span class="ot">=</span> <span class="st">"Petaling"</span>,</span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Sungai Buloh"</span> <span class="ot">=</span> <span class="st">"Petaling"</span>,</span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Default to keep original name if no match</span></span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a>                           <span class="at">.default =</span> district))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="labour" class="level4">
+<h4 class="anchored" data-anchor-id="labour">Labour</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>labour <span class="ot">&lt;-</span> labour <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">district =</span> <span class="fu">recode</span>(district,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Kulai"</span> <span class="ot">=</span> <span class="st">"Kulaijaya"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Seberang Perai corrections</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Seberang Perai Selatan"</span> <span class="ot">=</span> <span class="st">"S.P.Selatan"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Seberang Perai Tengah"</span> <span class="ot">=</span> <span class="st">"S.P. Tengah"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Seberang Perai Utara"</span> <span class="ot">=</span> <span class="st">"S.P. Utara"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Ulu Perak mappings</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Hulu Perak"</span> <span class="ot">=</span> <span class="st">"Ulu Perak"</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Manjung correction</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Manjung"</span> <span class="ot">=</span> <span class="st">"Manjung (Dinding)"</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Maradong"</span> <span class="ot">=</span> <span class="st">"Meradong"</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Tangkak"</span> <span class="ot">=</span> <span class="st">"Ledang"</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># Default to keep original name if no match</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                           <span class="at">.default =</span> district))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="household-income-inequality-poverty" class="level4">
+<h4 class="anchored" data-anchor-id="household-income-inequality-poverty">Household income, inequality, poverty</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rename_districts <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">district =</span> <span class="fu">case_when</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Iskandar Puteri"</span>, <span class="st">"Nusajaya"</span>, <span class="st">"Johor Bahru Selatan"</span>, <span class="st">"Johor Bahru Utara"</span>, <span class="st">"Seri Alam"</span>) <span class="sc">~</span> <span class="st">"Johor Bahru"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Bandar Bharu"</span> <span class="sc">~</span> <span class="st">"Bandar Baharu"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Brickfields"</span>, <span class="st">"Cheras"</span>, <span class="st">"Dang Wangi"</span>, <span class="st">"Sentul"</span>, <span class="st">"Wangsa Maju"</span>,<span class="st">"W.P. Kuala Lumpur"</span>) <span class="sc">~</span> <span class="st">"WP. Kuala Lumpur"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Nilai"</span> <span class="sc">~</span> <span class="st">"Seremban"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Cameron Highland"</span> <span class="sc">~</span> <span class="st">"Cameron Highlands"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kuala Lipis"</span> <span class="sc">~</span> <span class="st">"Lipis"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Batu Gajah"</span>, <span class="st">"Ipoh"</span>) <span class="sc">~</span> <span class="st">"Kinta"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Gerik"</span> <span class="sc">~</span> <span class="st">"Ulu Perak"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Manjung"</span> <span class="sc">~</span> <span class="st">"Manjung (Dinding)"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Pangkalan Hulu"</span> <span class="sc">~</span> <span class="st">"Ulu Perak"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Selama"</span>, <span class="st">"Taiping"</span>, <span class="st">"Larut dan Matang"</span>) <span class="sc">~</span> <span class="st">"Larut Dan Matang"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Sungai Siput"</span> <span class="sc">~</span> <span class="st">"Kuala Kangsar"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Tanjong Malim"</span>, <span class="st">"Tapah"</span>, <span class="st">"Bagan Datuk"</span>, <span class="st">"Muallim"</span>) <span class="sc">~</span> <span class="st">"Batang Padang"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Arau"</span>, <span class="st">"Kangar"</span>, <span class="st">"Padang Besar"</span>) <span class="sc">~</span> <span class="st">"Perlis"</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>      state <span class="sc">==</span> <span class="st">"Pulau Pinang"</span> <span class="sc">&amp;</span> district <span class="sc">==</span> <span class="st">"Seberang Perai Selatan"</span> <span class="sc">~</span> <span class="st">"S.P.Selatan"</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Seberang Perai Tengah"</span> <span class="sc">~</span> <span class="st">"S.P. Tengah"</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Seberang Perai Utara"</span> <span class="sc">~</span> <span class="st">"S.P. Utara"</span>,</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Ampang Jaya"</span> <span class="sc">~</span> <span class="st">"Gombak"</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kajang"</span> <span class="sc">~</span> <span class="st">"Ulu Langat"</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Pengkalan Hulu"</span>,<span class="st">"Hulu Perak"</span>) <span class="sc">~</span> <span class="st">"Ulu Perak"</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Hulu Selangor"</span> <span class="sc">~</span> <span class="st">"Ulu Selangor"</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Klang Selatan"</span>, <span class="st">"Klang Utara"</span>) <span class="sc">~</span> <span class="st">"Klang"</span>,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Petaling Jaya"</span>, <span class="st">"Serdang"</span>, <span class="st">"Sg. Buloh"</span>, <span class="st">"Shah Alam"</span>, <span class="st">"Subang Jaya"</span>, <span class="st">"Sungai Buloh"</span>) <span class="sc">~</span> <span class="st">"Petaling"</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kota Kinabatangan"</span> <span class="sc">~</span> <span class="st">"Kinabatangan"</span>,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kota Samarahan"</span> <span class="sc">~</span> <span class="st">"Samarahan"</span>,</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Matu Daro"</span>, <span class="st">"Tanjung Manis"</span>) <span class="sc">~</span> <span class="st">"Mukah"</span>,</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Padawan"</span> <span class="sc">~</span> <span class="st">"Kuching"</span>,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kulai"</span> <span class="sc">~</span> <span class="st">"Kulaijaya"</span>,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Tangkak"</span> <span class="sc">~</span> <span class="st">"Ledang"</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kecil Lojing"</span> <span class="sc">~</span> <span class="st">"Gua Musang"</span>,</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kalabakan"</span> <span class="sc">~</span> <span class="st">"Tawau"</span>,</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Telupid"</span> <span class="sc">~</span> <span class="st">"Beluran"</span>,</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Beluru"</span> <span class="sc">~</span> <span class="st">"Miri"</span>,</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Bukit Mabong"</span> <span class="sc">~</span> <span class="st">"Kapit"</span>,</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kabong"</span> <span class="sc">~</span> <span class="st">"Saratok"</span>,</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Maradong"</span> <span class="sc">~</span> <span class="st">"Meradong"</span>,</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Pusa"</span> <span class="sc">~</span> <span class="st">"Betong"</span>,</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Sebauh"</span> <span class="sc">~</span> <span class="st">"Bintulu"</span>,</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Subis"</span> <span class="sc">~</span> <span class="st">"Miri"</span>,</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Tebedu"</span> <span class="sc">~</span> <span class="st">"Serian"</span>,</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Telang Usan"</span> <span class="sc">~</span> <span class="st">"Marudi"</span>,</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>      district <span class="sc">==</span> <span class="st">"Kuala Nerus"</span> <span class="sc">~</span> <span class="st">"Kuala Terengganu"</span>,</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> district</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(data)</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>income <span class="ot">&lt;-</span> <span class="fu">rename_districts</span>(income)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>household <span class="ot">&lt;-</span> <span class="fu">rename_districts</span>(household)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>poverty <span class="ot">&lt;-</span> <span class="fu">rename_districts</span>(poverty)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="left-join" class="level3">
+<h3 class="anchored" data-anchor-id="left-join">Left Join</h3>
+<section id="crime-and-labour-data" class="level4">
+<h4 class="anchored" data-anchor-id="crime-and-labour-data">Crime and Labour data</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>crime_labour <span class="ot">&lt;-</span> crime <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2019</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2022</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(labour, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">10</span>,<span class="dv">12</span>,<span class="dv">14</span>,<span class="dv">15</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>crime_labour <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(crime_labour)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="crime_labour-with-income-inquality" class="level4">
+<h4 class="anchored" data-anchor-id="crime_labour-with-income-inquality">Crime_labour with income inquality</h4>
+<p>Remove any duplicates first</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>crime_labour <span class="ot">&lt;-</span> crime_labour <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(district, category,type,crimes,year,date.x, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq <span class="ot">&lt;-</span> crime_labour <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(income, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">10</span>,<span class="dv">11</span>,<span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="crime_labour_iq-with-household-income" class="level4">
+<h4 class="anchored" data-anchor-id="crime_labour_iq-with-household-income">Crime_labour_iq with household income</h4>
+<p>Remove any duplicates first</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq <span class="ot">&lt;-</span> crime_labour_iq <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(district, category,type,crimes,year,date.x, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household <span class="ot">&lt;-</span> crime_labour_iq <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(household, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="crime_labour_iq-with-household-poverty" class="level4">
+<h4 class="anchored" data-anchor-id="crime_labour_iq-with-household-poverty">Crime_labour_iq with household poverty</h4>
+<p>Remove any duplicates first</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household <span class="ot">&lt;-</span> crime_labour_iq_household <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(district, category,type,crimes,year,date.x, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household_poverty <span class="ot">&lt;-</span> crime_labour_iq_household <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(poverty, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,<span class="dv">15</span>,<span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Remove duplicates for the final one</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household_poverty <span class="ot">&lt;-</span> crime_labour_iq_household_poverty <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(district, category,type,crimes,year,date.x, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="left-join-with-malaysia-sf" class="level4">
+<h4 class="anchored" data-anchor-id="left-join-with-malaysia-sf">Left Join with Malaysia sf</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> <span class="fu">left_join</span>(msia_sf,crime_labour_iq_household_poverty, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ADM2_EN"</span> <span class="ot">=</span> <span class="st">"district"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">6</span>,<span class="dv">16</span><span class="sc">:</span><span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="combining-crime-type" class="level2">
+<h2 class="anchored" data-anchor-id="combining-crime-type">Combining Crime Type</h2>
+<p>From the initial prototype of the Shiny application, it was seen that for assault category, there was multiple types of robbery like robbery_gang_armed,robbery_gang_unarmed,robbery_solo_armed and robbery_solo_unarmed. This is the same for the property type with multiple types of vehicle theft like theft_vehicle_lorry,theft_vehicle_motorcar and theft_vehicle_motorcycle. This was causing the large file size as there are multiple rows, so we decided to combine it into a generic type <em>robbery</em> and <em>vehicle_theft</em>.As for the user it would not matter to them on the different types of robbery type or vehicle theft type</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cat_type =</span> <span class="fu">paste</span>(category, type, <span class="at">sep =</span> <span class="st">"-"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>category, <span class="sc">-</span>type) <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> cat_type,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> crimes,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="fl">0.0</span>,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fn =</span> mean  <span class="co"># Calculate the mean of duplicate values</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">robbery =</span> <span class="st">`</span><span class="at">assault-robbery_gang_armed</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">assault-robbery_gang_unarmed</span><span class="st">`</span> <span class="sc">+</span> </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">`</span><span class="at">assault-robbery_solo_armed</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">assault-robbery_solo_unarmed</span><span class="st">`</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">vehicle_theft =</span> <span class="st">`</span><span class="at">property-theft_vehicle_lorry</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">property-theft_vehicle_motorcar</span><span class="st">`</span> <span class="sc">+</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                    <span class="st">`</span><span class="at">property-theft_vehicle_motorcycle</span><span class="st">`</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_gang_armed</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_gang_unarmed</span><span class="st">`</span>, </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_solo_armed</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_solo_unarmed</span><span class="st">`</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_lorry</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_motorcar</span><span class="st">`</span>, </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_motorcycle</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span><span class="fu">str_remove</span>(., <span class="st">"^assault-|^property-"</span>))</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">"NA-NA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

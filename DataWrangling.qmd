@@ -7,6 +7,7 @@ This serves as a guide on how we did data wrangling on the different data sets. 
 ## Packages
 
 ```{r}
+#| eval: false
 pacman::p_load(sf, sfdep, tmap, tidyverse, knitr)
 ```
 
@@ -27,6 +28,7 @@ pacman::p_load(sf, sfdep, tmap, tidyverse, knitr)
 ## Importing the data
 
 ```{r}
+#| eval: false
 crime <- read_csv("data/aspatial/crime_district.csv")
 income <- read_csv("data/aspatial/hh_inequality.csv")
 household <- read_csv("data/aspatial/hh_income_district.csv")
@@ -45,6 +47,7 @@ msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp",
 ### Renaming "all"/"All" rows
 
 ```{r}
+#| eval: false
 excluded_column <- "date"
 crime <- crime[!apply(crime[, !names(crime) %in% excluded_column] == "all", 1, any), ]
 crime <- crime[!apply(crime[, !names(crime) %in% excluded_column] == "All", 1, any), ]
@@ -53,6 +56,7 @@ crime <- crime[!apply(crime[, !names(crime) %in% excluded_column] == "All", 1, a
 ### Adding year column
 
 ```{r}
+#| eval: false
 crime <- crime %>%
               mutate(year = year(date))
 
@@ -74,6 +78,7 @@ poverty <- poverty %>%
 #### Crime
 
 ```{r}
+#| eval: false
 crime <- crime %>%
   mutate(district = recode(district,
                            # Johor Bahru mappings
@@ -175,6 +180,7 @@ crime <- crime %>%
 #### Labour
 
 ```{r}
+#| eval: false
 labour <- labour %>%
   mutate(district = recode(district,
                            "Kulai" = "Kulaijaya",
@@ -199,6 +205,7 @@ labour <- labour %>%
 #### Household income, inequality, poverty
 
 ```{r}
+#| eval: false
 rename_districts <- function(data) {
   data <- data %>%
     mutate(district = case_when(
@@ -252,6 +259,7 @@ rename_districts <- function(data) {
 ```
 
 ```{r}
+#| eval: false
 income <- rename_districts(income)
 household <- rename_districts(household)
 poverty <- rename_districts(poverty)
@@ -262,6 +270,7 @@ poverty <- rename_districts(poverty)
 #### Crime and Labour data
 
 ```{r}
+#| eval: false
 crime_labour <- crime %>%
         filter(year >= 2019 & year <= 2022) %>%
         left_join(labour, by = c("district","year")) %>%
@@ -274,10 +283,12 @@ crime_labour <- na.omit(crime_labour)
 Remove any duplicates first
 
 ```{r}
+#| eval: false
 crime_labour <- crime_labour %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
 ```
 
 ```{r}
+#| eval: false
 crime_labour_iq <- crime_labour %>%
         left_join(income, by = c("district","year")) %>%
         select(1:7,10,11,14)
@@ -288,10 +299,12 @@ crime_labour_iq <- crime_labour %>%
 Remove any duplicates first
 
 ```{r}
+#| eval: false
 crime_labour_iq <- crime_labour_iq %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
 ```
 
 ```{r}
+#| eval: false
 crime_labour_iq_household <- crime_labour_iq %>%
         left_join(household, by = c("district","year")) %>%
         select(1:10,13,14)
@@ -302,10 +315,12 @@ crime_labour_iq_household <- crime_labour_iq %>%
 Remove any duplicates first
 
 ```{r}
+#| eval: false
 crime_labour_iq_household <- crime_labour_iq_household %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
 ```
 
 ```{r}
+#| eval: false
 crime_labour_iq_household_poverty <- crime_labour_iq_household %>%
         left_join(poverty, by = c("district","year")) %>%
         select(1:12,15,16)
@@ -314,12 +329,14 @@ crime_labour_iq_household_poverty <- crime_labour_iq_household %>%
 Remove duplicates for the final one
 
 ```{r}
+#| eval: false
 crime_labour_iq_household_poverty <- crime_labour_iq_household_poverty %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
 ```
 
 #### Left Join with Malaysia sf
 
 ```{r}
+#| eval: false
 msia <- left_join(msia_sf,crime_labour_iq_household_poverty, by = c("ADM2_EN" = "district")) %>%
         select(1,6,16:28)
 ```
@@ -329,6 +346,7 @@ msia <- left_join(msia_sf,crime_labour_iq_household_poverty, by = c("ADM2_EN" = 
 From the initial prototype of the Shiny application, it was seen that for assault category, there was multiple types of robbery like robbery_gang_armed,robbery_gang_unarmed,robbery_solo_armed and robbery_solo_unarmed. This is the same for the property type with multiple types of vehicle theft like theft_vehicle_lorry,theft_vehicle_motorcar and theft_vehicle_motorcycle. This was causing the large file size as there are multiple rows, so we decided to combine it into a generic type *robbery* and *vehicle_theft*.As for the user it would not matter to them on the different types of robbery type or vehicle theft type
 
 ```{r}
+#| eval: false
 msia <- msia %>%
   mutate(cat_type = paste(category, type, sep = "-")) %>%
   select(-category, -type) %>%
@@ -341,6 +359,7 @@ msia <- msia %>%
 ```
 
 ```{r}
+#| eval: false
 msia <- msia %>%
   mutate(
     robbery = `assault-robbery_gang_armed` + `assault-robbery_gang_unarmed` + 
