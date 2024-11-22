@@ -1,7 +1,7 @@
+library(Kendall)
 pacman::p_load(shiny, shinyjs, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
-             st, tidyverse, raster, tmap, tmaptools, ggplot2, spatstat,knitr,performance, see, sfdep, GWmodel,olsrr, ggstatsplot)
-
-msia <- read_rds("data/rds/msia3.rds")
+             st, tidyverse, raster, tmaptools, ggplot2, spatstat,knitr,performance, see, GWmodel,olsrr, ggstatsplot)
+msia <- read_rds("data/rds/test.rds")
 msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp", 
                    layer = "mys_admbnda_adm2_unhcr_20210211") %>%
   st_as_sf(coords =c(
@@ -32,7 +32,13 @@ ui <-
                                     selectInput(inputId = "EDAVariable", "Select variable for EDA",
                                                 choices = c("Participation rate" = "p_rate",
                                                             "Unemployment rate" = "u_rate",
-                                                            "Crimes" = "crimes")),
+                                                            "Causing Injury" = "causing_injury",
+                                                            "Murder" = "murder",
+                                                            "Rape" = "rape",
+                                                            "Break In" = "break_in",
+                                                            "Other Theft" = "theft_other",
+                                                            "Robbery" = "robbery",
+                                                            "Vehicle Theft" = "vehicle_theft")),
                                     radioButtons(inputId = "EDAyear",
                                                  label = "Year",
                                                  choices = c("2019", 
@@ -247,8 +253,15 @@ ui <-
                                     titlePanel("Global and Local Spatial"),
                                     fluidRow(column(7,
                                                     selectInput(inputId = "categoryVariable",
-                                                                label = "Select Category",
-                                                                choices = c("all","assault","property")),
+                                                                label = "Select type of crime",
+                                                                choices = c("Causing Injury" = "causing_injury",
+                                                                            "Murder" = "murder",
+                                                                            "Rape" = "rape",
+                                                                            "Break In" = "break_in",
+                                                                            "Other Theft" = "theft_other",
+                                                                            "Robbery" = "robbery",
+                                                                            "Vehicle Theft" = "vehicle_theft"
+                                                                            )),
                                                     selectInput(inputId = "relationshipVariable",
                                                                 label = "Map relationship to",
                                                                 choices = NULL),
@@ -294,7 +307,7 @@ ui <-
                                                 selected = "local moran(ii)"),
                                     sliderInput(inputId = "MoranConf", 
                                                 label = "Select Confidence level", 
-                                                min = 0.75, max = 0.99,
+                                                min = 0.05, max = 0.99,
                                                 value = 0.75, step = 0.05),
                                     actionButton("MoranUpdate", "Plot Map"),
                                   ),
@@ -311,8 +324,10 @@ ui <-
                                                          ),
                                                          
                                                          plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
-                                                tabPanel("Local Spatial Correlation", 
+                                                tabPanel("Local Moran Statistics", 
                                                          tmapOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
+                                                ),
+                                                tabPanel("LISA",
                                                          tmapOutput("LISA") %>% withSpinner(color = "#3498db")
                                                 ),
                                     )
@@ -324,18 +339,22 @@ ui <-
                                   sidebarPanel(
                                     titlePanel("Emerging Hot Spot Analysis"),
                                     selectInput(inputId = "categoryVariable2",
-                                                label = "Select Category",
-                                                choices = c("assault","property")),
-                                    selectInput(inputId = "typeVariable2",
-                                                label = "Select Type",
-                                                choices = NULL),
+                                                label = "Select type of crime",
+                                                choices = c("Causing Injury" = "causing_injury",
+                                                            "Murder" = "murder",
+                                                            "Rape" = "rape",
+                                                            "Break In" = "break_in",
+                                                            "Other Theft" = "theft_other",
+                                                            "Robbery" = "robbery",
+                                                            "Vehicle Theft" = "vehicle_theft"
+                                                )),
                                     sliderInput(inputId = "EHSASims", 
                                                 label = "Number of Simulations:", 
                                                 min = 99, max = 499,
                                                 value = 99, step = 100),
                                     sliderInput(inputId = "MoranConf2", 
                                                 label = "Select Confidence level", 
-                                                min = 0.75, max = 0.99,
+                                                min = 0.05, max = 0.99,
                                                 value = 0.75, step = 0.05),
                                     actionButton("MoranUpdate2", "Plot Map"),
                                   ),
@@ -434,29 +453,6 @@ server <- function(input, output, session){
   
   #Load typeVariable2 based on categoryVariable2
   #Load choices for type
-  filtered_data2 <- reactive({
-    req(input$categoryVariable2)
-    
-    if (input$categoryVariable2 == "all") {
-      msia
-    } else {
-      subset(msia, category == input$categoryVariable2)
-    }
-  })
-  
-  filtered_types2 <- reactive({
-    if (input$categoryVariable2 == "all") {
-      unique_type <- c("all", unique(filtered_data2()$type))
-    } else {
-      unique(filtered_data2()$type)
-    }
-    
-  })
-  
-  # Update district input based on selected province
-  observe({
-    updateSelectInput(session, "typeVariable2", choices = filtered_types2())
-  })
   
   updateSelectInput(session, "typeVariable3", choices = unique(combined_data$type))
   updateSelectInput(session, "typeVariable4", choices = unique(combined_data$type))
@@ -490,7 +486,7 @@ server <- function(input, output, session){
       incProgress(0.25)
       
       msia_filtered_nb_q <- st_contiguity(msia_filtered, queen = TRUE)
-      msia_filtered_wm_rs <- st_weights(msia_filtered_nb_q, style="W")
+      msia_filtered_wm_rs <- st_weights(msia_filtered_nb_q, style="W", allow_zero=TRUE)
       wm_q_filtered <- msia_filtered %>%
         mutate(nb = msia_filtered_nb_q,
                wt = msia_filtered_wm_rs,
@@ -525,23 +521,11 @@ server <- function(input, output, session){
   MsiaFiltered <- eventReactive(input$MoranUpdate,{
     withProgress(message = "Filtering data...", value = 0, {
       msia_filtered <- msia %>% filter(year %in% input$year, )
-      #For Global and Local Filter
-      if(input$categoryVariable != "all") {
-        msia_filtered <- msia_filtered %>% filter(category %in% input$categoryVariable)
-        incProgress(0.5)
-      }
-      else{
-        showModal(modalDialog(
-          title = "Message",
-          "Longer render time is expected as you have selected all categories",
-          easyClose = TRUE,)
-        )
-        incProgress(0.5)
-      }
+      incProgress(0.25)
       
       # Computing Contiguity Spatial Weights
       msia_filtered_nb_q <- st_contiguity(msia_filtered, queen = input$Contiguity1)
-      msia_filtered_wm_rs <- st_weights(msia_filtered_nb_q, style=input$MoranWeights)
+      msia_filtered_wm_rs <- st_weights(msia_filtered_nb_q, style=input$MoranWeights, allow_zero=TRUE)
       wm_q_filtered <- msia_filtered %>%
         mutate(nb = msia_filtered_nb_q,
                wt = msia_filtered_wm_rs,
@@ -550,7 +534,7 @@ server <- function(input, output, session){
       
       lisa <- wm_q_filtered %>%
         mutate(local_moran = local_moran(
-          crimes, nb, wt, nsim = as.numeric(input$MoranSims), zero.policy=TRUE),
+          .data[[input$categoryVariable]], nb, wt, nsim = as.numeric(input$MoranSims), zero.policy=TRUE),
           .before = 1) %>%
         unnest(local_moran)
       incProgress(0.25)
@@ -578,19 +562,15 @@ server <- function(input, output, session){
     
     if(nrow(msia) == 0) return(NULL)  # Exit if no data
     
-    msia_filtered_EHSA <- msia %>% filter(category %in% input$categoryVariable2, type %in% input$typeVariable2)
+    msia_filtered_EHSA <- msia
     # Computing EHSA
     msia_df <- msia_filtered_EHSA %>%
-      dplyr::select(year, crimes, ADM2_EN) %>%
+      dplyr::select(year, !!sym(input$categoryVariable2), ADM2_EN) %>%
       st_drop_geometry()
     
     msia_sf_filtered <- msia_sf %>%
       semi_join(msia_df, by = "ADM2_EN")
     
-    msia_df <- msia_df %>%
-      group_by(year, ADM2_EN) %>%
-      summarise(crimes = mean(crimes, na.rm = TRUE)) %>%
-      ungroup()
     
     msia_spt <- spacetime(msia_df, msia_sf_filtered,
                           .loc_col = "ADM2_EN",
@@ -598,7 +578,7 @@ server <- function(input, output, session){
     
     ehsa <- emerging_hotspot_analysis(
       x = msia_spt, 
-      .var = "crimes", 
+      .var = input$categoryVariable2, 
       k = 1, 
       nsim = as.numeric(input$EHSASims)
     )
@@ -650,7 +630,9 @@ server <- function(input, output, session){
     df <- MsiaFiltered()$global
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
-    gmtest <- global_moran_test(df$crimes,
+    crime_column <- input$categoryVariable
+    
+    gmtest <- global_moran_test(df[[crime_column]],
                                df$nb,
                                df$wt,
                                zero.policy = TRUE,
@@ -663,7 +645,9 @@ server <- function(input, output, session){
     df <- MsiaFiltered()$global
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
-    gmres <-global_moran_perm(df$crimes,
+    crime_column <- input$categoryVariable
+    
+    gmres <-global_moran_perm(df[[crime_column]],
                               df$nb,
                               df$wt,
                               zero.policy = TRUE,
@@ -678,7 +662,9 @@ server <- function(input, output, session){
     df <- MsiaFiltered()$global
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
-    gmres <-global_moran_perm(df$crimes,
+    crime_column <- input$categoryVariable
+    
+    gmres <-global_moran_perm(df[[crime_column]],
                               df$nb,
                               df$wt,
                               zero.policy = TRUE,
@@ -698,6 +684,7 @@ server <- function(input, output, session){
     df <- MsiaFiltered()$lisa
     
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
+    tmap_mode("view")
     # Map creation using tmap
     localMI_map <- tm_shape(df) +
       tm_fill(col = input$localmoranstats, 
@@ -715,6 +702,7 @@ server <- function(input, output, session){
     df <- LISAResults()
     if(is.null(df)) return()
     
+    tmap_mode("view")
     lisamap <- tm_shape(df) +
       tm_polygons() + 
       tm_borders(alpha = 0.5) + 
@@ -732,8 +720,9 @@ server <- function(input, output, session){
     if(is.null(df)) return()
     
     lisa_sig <- df  %>%
-      filter(p_value < (1 - as.numeric(input$MoranConf)))  
+      filter(p_value < (1 - as.numeric(input$MoranConf)))
     
+    tmap_mode("view")
     lisamap <- tm_shape(df) +
       tm_polygons() + 
       tm_borders(alpha = 0.5) + 
@@ -742,7 +731,7 @@ server <- function(input, output, session){
       tm_text(input$relationshipVariable, size = 0.6, col = "black") +
       tm_borders(alpha = 0.4) +
       tm_layout(main.title = "LISA map of crimes", main.title.size = 1)
-    
+    tmap_mode("plot")
     lisamap 
   })
   
