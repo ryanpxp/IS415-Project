@@ -359,7 +359,7 @@ ui <-
                                     actionButton("MoranUpdate2", "Plot Map"),
                                   ),
                                   mainPanel(
-                                    plotOutput("EHSA") %>% withSpinner(color = "#3498db"),
+                                    tmapOutput("EHSA") %>% withSpinner(color = "#3498db"),
                                     plotOutput("EHSABar") %>% withSpinner(color = "#3498db")),
                                   
                                 )
@@ -703,12 +703,10 @@ server <- function(input, output, session){
     if(is.null(df)) return()
     
     tmap_mode("view")
-    lisamap <- tm_shape(df) +
-      tm_polygons() + 
-      tm_borders(alpha = 0.5) + 
+    lisamap <- 
       tm_shape(df) + 
       tm_fill(col = input$LisaClass2, title = (paste("Significance:", input$LisaClass2))) +
-      tm_borders(alpha = 0.4) +
+      tm_borders(alpha = 0.7) +
       tm_layout(main.title = "LISA Map", main.title.size = 1)
     
     lisamap 
@@ -723,28 +721,27 @@ server <- function(input, output, session){
       filter(p_value < (1 - as.numeric(input$MoranConf)))
     
     tmap_mode("view")
-    lisamap <- tm_shape(df) +
+    lisamap <- tm_shape(df,simplify = 0.05,raster.downsample = TRUE) +
       tm_polygons() + 
       tm_borders(alpha = 0.5) + 
       tm_shape(lisa_sig) + 
       tm_fill(col = input$LisaClass, title = (paste("Significance:", input$LisaClass))) +
       tm_text(input$relationshipVariable, size = 0.6, col = "black") +
-      tm_borders(alpha = 0.4) +
+      tm_borders(alpha = 0.7) +
       tm_layout(main.title = "LISA map of crimes", main.title.size = 1)
-    tmap_mode("plot")
     lisamap 
   })
   
   #Render EHSA map 
-  output$EHSA <- renderPlot({
+  output$EHSA <- renderTmap({
     df <- EHSAResults()
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
     EHSA_sig <- df %>%
       filter(p_value < (1 - as.numeric(input$MoranConf2)))
     
-    ehsamap <- tm_shape(df) +
-      tm_polygons() +
+    ehsamap <- tm_shape(df,simplify = 0.05,raster.downsample = TRUE) +
+      tm_polygons() + 
       tm_borders(alpha = 0.5) +
       tm_shape(EHSA_sig) +
       tm_fill(col = "classification", title = "Classification") + 
