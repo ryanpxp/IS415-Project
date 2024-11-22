@@ -2,4 +2,358 @@
 title: "Data Wrangling"
 ---
 
-Data wrangle
+This serves as a guide on how we did data wrangling on the different data sets. Initially the Shiny application runs fine locally with the initial rds that we saved and loaded. However upon deploying we found that the rds file was too big for the Shiny application so additional steps had to be taken to reduce the rds file.
+
+## Packages
+
+```{r}
+pacman::p_load(sf, sfdep, tmap, tidyverse, knitr)
+```
+
+## Data
+
+-   **Income Inequality Data:** Household income inequality by district (<https://data.gov.my/data-catalogue/hh_inequality_district>)
+
+-   **Annual Principal Labour Force Statistics by District:** Annual principal labour force statistics including unemployment and participation rates (<https://data.gov.my/data-catalogue/lfs_district>)
+
+-   **Crime Data:** Crime rates by district (<https://data.gov.my/data-catalogue/crime_district>)
+
+-   **Malaysia - Subnational Administrative Boundaries: (**<https://data.humdata.org/dataset/cod-ab-mys?>)
+
+-   **Household Income Data:** Household income by district (<https://data.gov.my/data-catalogue/hh_income_district>)
+
+-   **Household Poverty Data:** Household Poverty by district (<https://data.gov.my/data-catalogue/hh_poverty_district>)
+
+## Importing the data
+
+```{r}
+crime <- read_csv("data/aspatial/crime_district.csv")
+income <- read_csv("data/aspatial/hh_inequality.csv")
+household <- read_csv("data/aspatial/hh_income_district.csv")
+poverty <- read_csv("data/aspatial/hh_poverty_district.csv")
+labour <- read_csv("data/aspatial/lfs_district.csv")
+msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp", 
+                 layer = "mys_admbnda_adm2_unhcr_20210211") %>%
+  st_as_sf(coords =c(
+    "longitude", "latitude"),
+           crs = 4326) %>%
+  st_transform(crs = 3168)
+```
+
+## Data Wrangling
+
+### Renaming "all"/"All" rows
+
+```{r}
+excluded_column <- "date"
+crime <- crime[!apply(crime[, !names(crime) %in% excluded_column] == "all", 1, any), ]
+crime <- crime[!apply(crime[, !names(crime) %in% excluded_column] == "All", 1, any), ]
+```
+
+### Adding year column
+
+```{r}
+crime <- crime %>%
+              mutate(year = year(date))
+
+income <- income %>%
+              mutate(year = year(date))
+
+labour <- labour %>%
+              mutate(year = year(date))
+
+household <- household %>%
+              mutate(year = year(date))
+
+poverty <- poverty %>%
+              mutate(year = year(date))
+```
+
+### Renaming mismatch districts
+
+#### Crime
+
+```{r}
+crime <- crime %>%
+  mutate(district = recode(district,
+                           # Johor Bahru mappings
+                           "Iskandar Puteri" = "Johor Bahru",
+                           "Nusajaya" = "Johor Bahru",
+                           "Johor Bahru Selatan" = "Johor Bahru",
+                           "Johor Bahru Utara" = "Johor Bahru",
+                           "Seri Alam" = "Johor Bahru",
+                           
+                           # Bandar Baharu correction
+                           "Bandar Bharu" = "Bandar Baharu",
+                           
+                           # WP Kuala Lumpur mappings
+                           "Brickfields" = "WP. Kuala Lumpur",
+                           "Cheras" = "WP. Kuala Lumpur",
+                           "Dang Wangi" = "WP. Kuala Lumpur",
+                           "Sentul" = "WP. Kuala Lumpur",
+                           "Wangsa Maju" = "WP. Kuala Lumpur",
+                           
+                           # Seremban correction
+                           "Nilai" = "Seremban",
+                           
+                           # Seberang Perai corrections
+                           "Seberang Perai Selatan" = "S.P.Selatan",
+                           "Seberang Perai Tengah" = "S.P. Tengah",
+                           "Seberang Perai Utara" = "S.P. Utara",
+                           
+                           # Cameron Highlands correction
+                           "Cameron Highland" = "Cameron Highlands",
+                           
+                           # Lipis correction
+                           "Kuala Lipis" = "Lipis",
+                           
+                           # Kinta mappings
+                           "Batu Gajah" = "Kinta",
+                           "Ipoh" = "Kinta",
+                           
+                           # Ulu Perak mappings
+                           "Gerik" = "Ulu Perak",
+                           "Pengkalan Hulu" = "Ulu Perak",
+      
+                           
+                           # Manjung correction
+                           "Manjung" = "Manjung (Dinding)",
+                           
+                           # Larut Dan Matang mappings
+                           "Selama" = "Larut Dan Matang",
+                           "Taiping" = "Larut Dan Matang",
+                           
+                           # Kuala Kangsar correction
+                           "Sungai Siput" = "Kuala Kangsar",
+                           
+                           # Batang Padang mappings
+                           "Tanjong Malim" = "Batang Padang",
+                           "Tapah" = "Batang Padang",
+                           
+                           # Perlis mappings
+                           "Arau" = "Perlis",
+                           "Kangar" = "Perlis",
+                           "Padang Besar" = "Perlis",
+                           
+                           # Kinabatangan correction
+                           "Kota Kinabatangan" = "Kinabatangan",
+                           
+                           # Samarahan correction
+                           "Kota Samarahan" = "Samarahan",
+                           
+                           # Mukah correction
+                           "Matu Daro" = "Mukah",
+                           
+                           # Kuching correction
+                           "Padawan" = "Kuching",
+                           
+                           # Gombak correction
+                           "Ampang Jaya" = "Gombak",
+                           
+                           # Ulu Langat correction
+                           "Kajang" = "Ulu Langat",
+                           
+                           # Ulu Selangor correction
+                           "Hulu Selangor" = "Ulu Selangor",
+                           
+                           # Klang mappings
+                           "Klang Selatan" = "Klang",
+                           "Klang Utara" = "Klang",
+                           
+                           # Petaling mappings
+                           "Petaling Jaya" = "Petaling",
+                           "Serdang" = "Petaling",
+                           "Sg. Buloh" = "Petaling",
+                           "Shah Alam" = "Petaling",
+                           "Subang Jaya" = "Petaling",
+                           "Sungai Buloh" = "Petaling",
+                           
+                           # Default to keep original name if no match
+                           .default = district))
+```
+
+#### Labour
+
+```{r}
+labour <- labour %>%
+  mutate(district = recode(district,
+                           "Kulai" = "Kulaijaya",
+                           # Seberang Perai corrections
+                           "Seberang Perai Selatan" = "S.P.Selatan",
+                           "Seberang Perai Tengah" = "S.P. Tengah",
+                           "Seberang Perai Utara" = "S.P. Utara",
+                           
+                           # Ulu Perak mappings
+                           "Hulu Perak" = "Ulu Perak",
+                           
+                           # Manjung correction
+                           "Manjung" = "Manjung (Dinding)",
+                           
+                           "Maradong" = "Meradong",
+                           "Tangkak" = "Ledang",
+                           
+                           # Default to keep original name if no match
+                           .default = district))
+```
+
+#### Household income, inequality, poverty
+
+```{r}
+rename_districts <- function(data) {
+  data <- data %>%
+    mutate(district = case_when(
+      district %in% c("Iskandar Puteri", "Nusajaya", "Johor Bahru Selatan", "Johor Bahru Utara", "Seri Alam") ~ "Johor Bahru",
+      district == "Bandar Bharu" ~ "Bandar Baharu",
+      district %in% c("Brickfields", "Cheras", "Dang Wangi", "Sentul", "Wangsa Maju","W.P. Kuala Lumpur") ~ "WP. Kuala Lumpur",
+      district == "Nilai" ~ "Seremban",
+      district == "Cameron Highland" ~ "Cameron Highlands",
+      district == "Kuala Lipis" ~ "Lipis",
+      district %in% c("Batu Gajah", "Ipoh") ~ "Kinta",
+      district == "Gerik" ~ "Ulu Perak",
+      district == "Manjung" ~ "Manjung (Dinding)",
+      district == "Pangkalan Hulu" ~ "Ulu Perak",
+      district %in% c("Selama", "Taiping", "Larut dan Matang") ~ "Larut Dan Matang",
+      district == "Sungai Siput" ~ "Kuala Kangsar",
+      district %in% c("Tanjong Malim", "Tapah", "Bagan Datuk", "Muallim") ~ "Batang Padang",
+      district %in% c("Arau", "Kangar", "Padang Besar") ~ "Perlis",
+      state == "Pulau Pinang" & district == "Seberang Perai Selatan" ~ "S.P.Selatan",
+      district == "Seberang Perai Tengah" ~ "S.P. Tengah",
+      district == "Seberang Perai Utara" ~ "S.P. Utara",
+      district == "Ampang Jaya" ~ "Gombak",
+      district == "Kajang" ~ "Ulu Langat",
+      district %in% c("Pengkalan Hulu","Hulu Perak") ~ "Ulu Perak",
+      district == "Hulu Selangor" ~ "Ulu Selangor",
+      district %in% c("Klang Selatan", "Klang Utara") ~ "Klang",
+      district %in% c("Petaling Jaya", "Serdang", "Sg. Buloh", "Shah Alam", "Subang Jaya", "Sungai Buloh") ~ "Petaling",
+      district == "Kota Kinabatangan" ~ "Kinabatangan",
+      district == "Kota Samarahan" ~ "Samarahan",
+      district %in% c("Matu Daro", "Tanjung Manis") ~ "Mukah",
+      district == "Padawan" ~ "Kuching",
+      district == "Kulai" ~ "Kulaijaya",
+      district == "Tangkak" ~ "Ledang",
+      district == "Kecil Lojing" ~ "Gua Musang",
+      district == "Kalabakan" ~ "Tawau",
+      district == "Telupid" ~ "Beluran",
+      district == "Beluru" ~ "Miri",
+      district == "Bukit Mabong" ~ "Kapit",
+      district == "Kabong" ~ "Saratok",
+      district == "Maradong" ~ "Meradong",
+      district == "Pusa" ~ "Betong",
+      district == "Sebauh" ~ "Bintulu",
+      district == "Subis" ~ "Miri",
+      district == "Tebedu" ~ "Serian",
+      district == "Telang Usan" ~ "Marudi",
+      district == "Kuala Nerus" ~ "Kuala Terengganu",
+      TRUE ~ district
+    ))
+  
+  return(data)
+}
+```
+
+```{r}
+income <- rename_districts(income)
+household <- rename_districts(household)
+poverty <- rename_districts(poverty)
+```
+
+### Left Join
+
+#### Crime and Labour data
+
+```{r}
+crime_labour <- crime %>%
+        filter(year >= 2019 & year <= 2022) %>%
+        left_join(labour, by = c("district","year")) %>%
+        select(1:7,10,12,14,15)
+crime_labour <- na.omit(crime_labour)
+```
+
+#### Crime_labour with income inquality
+
+Remove any duplicates first
+
+```{r}
+crime_labour <- crime_labour %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+```
+
+```{r}
+crime_labour_iq <- crime_labour %>%
+        left_join(income, by = c("district","year")) %>%
+        select(1:7,10,11,14)
+```
+
+#### Crime_labour_iq with household income
+
+Remove any duplicates first
+
+```{r}
+crime_labour_iq <- crime_labour_iq %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+```
+
+```{r}
+crime_labour_iq_household <- crime_labour_iq %>%
+        left_join(household, by = c("district","year")) %>%
+        select(1:10,13,14)
+```
+
+#### Crime_labour_iq with household poverty
+
+Remove any duplicates first
+
+```{r}
+crime_labour_iq_household <- crime_labour_iq_household %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+```
+
+```{r}
+crime_labour_iq_household_poverty <- crime_labour_iq_household %>%
+        left_join(poverty, by = c("district","year")) %>%
+        select(1:12,15,16)
+```
+
+Remove duplicates for the final one
+
+```{r}
+crime_labour_iq_household_poverty <- crime_labour_iq_household_poverty %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+```
+
+#### Left Join with Malaysia sf
+
+```{r}
+msia <- left_join(msia_sf,crime_labour_iq_household_poverty, by = c("ADM2_EN" = "district")) %>%
+        select(1,6,16:28)
+```
+
+## Combining Crime Type
+
+From the initial prototype of the Shiny application, it was seen that for assault category, there was multiple types of robbery like robbery_gang_armed,robbery_gang_unarmed,robbery_solo_armed and robbery_solo_unarmed. This is the same for the property type with multiple types of vehicle theft like theft_vehicle_lorry,theft_vehicle_motorcar and theft_vehicle_motorcycle. This was causing the large file size as there are multiple rows, so we decided to combine it into a generic type *robbery* and *vehicle_theft*.As for the user it would not matter to them on the different types of robbery type or vehicle theft type
+
+```{r}
+msia <- msia %>%
+  mutate(cat_type = paste(category, type, sep = "-")) %>%
+  select(-category, -type) %>%
+  pivot_wider(
+    names_from = cat_type,
+    values_from = crimes,
+    values_fill = 0.0,
+    values_fn = mean  # Calculate the mean of duplicate values
+  )
+```
+
+```{r}
+msia <- msia %>%
+  mutate(
+    robbery = `assault-robbery_gang_armed` + `assault-robbery_gang_unarmed` + 
+              `assault-robbery_solo_armed` + `assault-robbery_solo_unarmed`,
+    vehicle_theft = `property-theft_vehicle_lorry` + `property-theft_vehicle_motorcar` + 
+                    `property-theft_vehicle_motorcycle`
+  ) %>%
+  select(-`assault-robbery_gang_armed`, -`assault-robbery_gang_unarmed`, 
+         -`assault-robbery_solo_armed`, -`assault-robbery_solo_unarmed`,
+         -`property-theft_vehicle_lorry`, -`property-theft_vehicle_motorcar`, 
+         -`property-theft_vehicle_motorcycle`) %>%
+  rename_with(~str_remove(., "^assault-|^property-"))
+
+msia <- msia %>%
+  select(-"NA-NA")
+```
