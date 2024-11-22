@@ -7,7 +7,11 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - href: DataWrangling.qmd
+        text: Data Wrangling
+      - href: poster.qmd
+        text: Poster
+
 
 format:
   html:

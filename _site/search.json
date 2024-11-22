@@ -1,12 +1,5 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
@@ -56,10 +49,17 @@
     "text": "6. Prototypes & Storyboards"
   },
   {
-    "objectID": "index.html#feedback-future-steps",
-    "href": "index.html#feedback-future-steps",
-    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
-    "section": "7. Feedback & Future Steps",
-    "text": "7. Feedback & Future Steps\nThis proposal serves as an opportunity to gather feedback on the direction of our analysis and the datasets we have selected.\nBased on the feedback, we may refine our approach by adjusting our data sources or expanding our analytical framework."
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "DataWrangling.html",
+    "href": "DataWrangling.html",
+    "title": "Data Wrangling",
+    "section": "",
+    "text": "Data wrangle"
   }
 ]
