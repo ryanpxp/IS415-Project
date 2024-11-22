@@ -376,3 +376,10 @@ msia <- msia %>%
 msia <- msia %>%
   select(-"NA-NA")
 ```
+
+Remove NA values for the year
+
+```{r}
+#| eval: false
+msia <- msia[!is.na(msia$year), ]
+```
