@@ -11,6 +11,10 @@ website:
         text: Data Wrangling
       - href: poster.qmd
         text: Poster
+      - href: guide.qmd
+        text: User Guide
+      - href: https://is415-kwee-cheng.shinyapps.io/G1T9-AbangSmith/
+        text: Shiny Application
 
 
 format:

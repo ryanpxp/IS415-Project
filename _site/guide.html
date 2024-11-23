@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Team: Abang Smith">
-<meta name="dcterms.date" content="2024-10-13">
 
-<title>IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia – IS415-Project</title>
+<title>User Guide – IS415-Project</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -91,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -103,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Poster</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./guide.html"> 
+    <a class="nav-link active" href="./guide.html" aria-current="page"> 
 <span class="menu-text">User Guide</span></a>
   </li>  
   <li class="nav-item">
@@ -126,16 +124,22 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">1. Motivation</a></li>
-  <li><a href="#problem-statement" id="toc-problem-statement" class="nav-link" data-scroll-target="#problem-statement">2. Problem Statement</a></li>
-  <li><a href="#related-work" id="toc-related-work" class="nav-link" data-scroll-target="#related-work">3. Related Work</a>
+  <li><a href="#navigation-bar" id="toc-navigation-bar" class="nav-link active" data-scroll-target="#navigation-bar">Navigation Bar</a></li>
+  <li><a href="#eda" id="toc-eda" class="nav-link" data-scroll-target="#eda">EDA</a>
   <ul class="collapse">
-  <li><a href="#stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia." id="toc-stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia." class="nav-link" data-scroll-target="#stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia.">3.1 Stimulating Economic Growth, Improving Quality of Life &amp; Enhancing Youth Involvement, Proceedings of International Conference on Contemporary Economic Issues 2014, Kuala Lumpur: Malaysia.</a></li>
-  <li><a href="#the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia" id="toc-the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia" class="nav-link" data-scroll-target="#the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia">3.2 The Impact of Economic Growth, Education Level, and Inflation Rate on Income Inequality in Malaysia</a></li>
+  <li><a href="#data-set" id="toc-data-set" class="nav-link" data-scroll-target="#data-set">Data Set</a></li>
+  <li><a href="#lisa" id="toc-lisa" class="nav-link" data-scroll-target="#lisa">LISA</a></li>
   </ul></li>
-  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">4. Data</a></li>
-  <li><a href="#approach" id="toc-approach" class="nav-link" data-scroll-target="#approach">5. Approach</a></li>
-  <li><a href="#prototypes-storyboards" id="toc-prototypes-storyboards" class="nav-link" data-scroll-target="#prototypes-storyboards">6. Prototypes &amp; Storyboards</a></li>
+  <li><a href="#geographically-weighted-regression" id="toc-geographically-weighted-regression" class="nav-link" data-scroll-target="#geographically-weighted-regression">Geographically Weighted Regression</a>
+  <ul class="collapse">
+  <li><a href="#assumptions-checks" id="toc-assumptions-checks" class="nav-link" data-scroll-target="#assumptions-checks">Assumptions Checks</a></li>
+  <li><a href="#gwr-model" id="toc-gwr-model" class="nav-link" data-scroll-target="#gwr-model">GWR Model</a></li>
+  </ul></li>
+  <li><a href="#spatial-autocorrelation" id="toc-spatial-autocorrelation" class="nav-link" data-scroll-target="#spatial-autocorrelation">Spatial Autocorrelation</a>
+  <ul class="collapse">
+  <li><a href="#global-and-local-spatial-autocorrelation" id="toc-global-and-local-spatial-autocorrelation" class="nav-link" data-scroll-target="#global-and-local-spatial-autocorrelation">Global and Local Spatial Autocorrelation</a></li>
+  <li><a href="#emerging-hot-spot-analysis" id="toc-emerging-hot-spot-analysis" class="nav-link" data-scroll-target="#emerging-hot-spot-analysis">Emerging Hot Spot Analysis</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -144,33 +148,15 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia</h1>
+<h1 class="title">User Guide</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Team: Abang Smith </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">October 13, 2024</p>
-    </div>
-  </div>
   
-    <div>
-    <div class="quarto-title-meta-heading">Modified</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date-modified">October 13, 2024</p>
-    </div>
-  </div>
     
   </div>
   
@@ -179,64 +165,185 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="motivation" class="level2">
-<h2 class="anchored" data-anchor-id="motivation">1. Motivation</h2>
-<p>Intuitively, education plays a critical role in determining future economic opportunities and might be influenced by socio-economic conditions such as income inequality. However, school completion rates vary significantly across districts in Malaysia.</p>
-<p>This project aims to explore the spatial relationship between income inequality, school completion rates and crime rates, with the goal of identifying districts where disparities are most pronounced. By using geospatial methods, we seek to uncover spatial patterns that can help policymakers target interventions more effectively.</p>
+<p>This serves as guide on how to use our <a href="https://is415-kwee-cheng.shinyapps.io/G1T9-AbangSmith/">Shiny application</a></p>
+<section id="navigation-bar" class="level2">
+<h2 class="anchored" data-anchor-id="navigation-bar">Navigation Bar</h2>
+<p><img src="images/clipboard-1207142688.png" class="img-fluid"></p>
+<p>This serves as the main point to navigate the different types of analysis that we did</p>
 </section>
-<section id="problem-statement" class="level2">
-<h2 class="anchored" data-anchor-id="problem-statement">2. Problem Statement</h2>
-<p>Despite Malaysia’s advancements in education, gaps in school completion rates persist across regions. One significant factor contributing to this is income inequality. Our project aims to answer the question: How does income inequality impact school completion rates across different regions of Malaysia? Additionally, we will investigate how other factors, such as regional crime rates, may interact with these variables to further affect educational outcomes.</p>
+<section id="eda" class="level2">
+<h2 class="anchored" data-anchor-id="eda">EDA</h2>
+<section id="data-set" class="level3">
+<h3 class="anchored" data-anchor-id="data-set">Data Set</h3>
+<p>This tab allows users to visualise the distribution of the different types of crime, including socio-economic factors. They are presented with a histogram (top-left), box-plot (top-right) and a choropleth map at the bottom.</p>
+<p><img src="images/clipboard-4053125080.png" class="img-fluid"></p>
+<p>Users are able to select the variable they would like to explore whether it be socio-economic factors or the different types of crime. They are also able to specify the year they would like to explore. It should be noted that socio-economic factors like <strong><em>gini, income mean, income median, poverty absolute, poverty relative</em></strong> are only available for the years <strong>2019</strong> &amp; <strong>2022.</strong> As this is what was given on <a href="data.gov.my">data.gov.my</a></p>
 </section>
-<section id="related-work" class="level2">
-<h2 class="anchored" data-anchor-id="related-work">3. Related Work</h2>
-<section id="stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia." class="level3">
-<h3 class="anchored" data-anchor-id="stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia.">3.1 Stimulating Economic Growth, Improving Quality of Life &amp; Enhancing Youth Involvement, Proceedings of International Conference on Contemporary Economic Issues 2014, Kuala Lumpur: Malaysia.</h3>
-<p>This paper has shed some light on the relationship between poverty, education and income<br>
-inequality. While overall poverty incidence is low, pockets of poverty remains particularly<br>
-among those living in the rural areas and the Bumiputeras. The incidence of poverty declines<br>
-with the level of education attained by the head of households. This negative correlation<br>
-between education and poverty is consistent with the prediction and this highlights the<br>
-important role played by education, especially at tertiary level and higher in reducing poverty<br>
-While level of poverty declines with education, income inequality increases with education.<br>
-There is an increase in average income from group to group with more and more members<br>
-having higher education but their respective income inequalities are not as clear cut. In other<br>
-words, there exist significant differences in income inequality among sub-groups but with no<br>
-clear pattern.</p>
-<p><a href="https://www.researchgate.net/profile/Hooi-Hooi-Lean/publication/274376082_Lean_HH_Lim_ES_Khoo_SL_Mohd_S_2014_Stimulating_Economic_Growth_Improving_Quality_of_Life_Enhancing_Youth_Involvement_Proceedings_of_International_Conference_on_Contemporary_Economic_Issues_2014_Kuala_/links/551cc2700cf2909047bcad80/Lean-HH-Lim-ES-Khoo-SL-Mohd-S-2014-Stimulating-Economic-Growth-Improving-Quality-of-Life-Enhancing-Youth-Involvement-Proceedings-of-International-Conference-on-Contemporary-Economic-Issue.pdf#page=117">Source</a></p>
-</section>
-<section id="the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia" class="level3">
-<h3 class="anchored" data-anchor-id="the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia">3.2 The Impact of Economic Growth, Education Level, and Inflation Rate on Income Inequality in Malaysia</h3>
-<p>This is an article about income inequality in Malaysia. It discusses the relationship between income inequality and economic growth, education level, and inflation rate. The Gini coefficient is used to measure income inequality. A high Gini coefficient indicates a high level of income inequality. Economic growth in wealthy countries can increase income inequality. However, income inequality in poor countries can impede economic progress.</p>
-<p>The conclusion of the article is that economic growth, education level, and inflation rate all have an impact on income inequality in Malaysia. However, the impact of these factors varies depending on the level of economic development. In Malaysia, economic growth has led to an increase in income inequality. However, increasing education levels and reducing inflation rates can help to reduce income inequality.</p>
-<p><a href="https://hrmars.com/papers_submitted/18136/the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia.pdf">Source</a></p>
+<section id="lisa" class="level3">
+<h3 class="anchored" data-anchor-id="lisa">LISA</h3>
+<p>In this tab users are able to explore LISA classification for socio-economic factors as those were not covered in the Spatial Autocorrelation.</p>
+<p><img src="images/clipboard-1741873807.png" class="img-fluid"></p>
+<p>Users are able to select the socio-economic factors that they would like for LISA classification and the type of LISA classification. Likewise socio-economic factors like <strong><em>gini, income mean, income median, poverty absolute, poverty relative</em></strong> are only available for the years <strong>2019</strong> &amp; <strong>2022</strong>.</p>
 </section>
 </section>
-<section id="data" class="level2">
-<h2 class="anchored" data-anchor-id="data">4. Data</h2>
-<p>We will leverage the following datasets from the Malaysian government’s open data platform:</p>
+<section id="geographically-weighted-regression" class="level2">
+<h2 class="anchored" data-anchor-id="geographically-weighted-regression">Geographically Weighted Regression</h2>
+<section id="assumptions-checks" class="level3">
+<h3 class="anchored" data-anchor-id="assumptions-checks">Assumptions Checks</h3>
+<section id="correlation-analysis" class="level4">
+<h4 class="anchored" data-anchor-id="correlation-analysis">Correlation Analysis</h4>
+<p><img src="images/clipboard-3410578648.png" class="img-fluid"></p>
+</section>
+<section id="model-performance" class="level4">
+<h4 class="anchored" data-anchor-id="model-performance">Model Performance</h4>
+<p><img src="images/clipboard-2130314413.png" class="img-fluid"></p>
+</section>
+<section id="check" class="level4">
+<h4 class="anchored" data-anchor-id="check">Check</h4>
+<p><img src="images/clipboard-4202787560.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="gwr-model" class="level3">
+<h3 class="anchored" data-anchor-id="gwr-model">GWR Model</h3>
+<section id="map" class="level4">
+<h4 class="anchored" data-anchor-id="map">Map</h4>
+</section>
+<section id="stats" class="level4">
+<h4 class="anchored" data-anchor-id="stats">Stats</h4>
+</section>
+</section>
+</section>
+<section id="spatial-autocorrelation" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-autocorrelation">Spatial Autocorrelation</h2>
+<section id="global-and-local-spatial-autocorrelation" class="level3">
+<h3 class="anchored" data-anchor-id="global-and-local-spatial-autocorrelation">Global and Local Spatial Autocorrelation</h3>
+<section id="global-spatial-autocorrelation" class="level4">
+<h4 class="anchored" data-anchor-id="global-spatial-autocorrelation">Global Spatial Autocorrelation</h4>
+<p><img src="images/clipboard-601498860.png" class="img-fluid"></p>
+<p><img src="images/clipboard-147141593.png" class="img-fluid"></p>
+<p>This tab allows user to view global and local spatial autocorrelation, we decided to combine it into one tab as a few of the inputs are overlapped between global and local. The results are then displayed on the three tabs on the right.</p>
+<p><br>
+From here users are able to select the type of crime and year which applies for <strong>global and local spatial autocorrelation</strong> and <strong>LISA</strong>.</p>
+<p>For choosing which relationship to map to, users are able to choose the socio-economic factor that they would like to show alongside for <strong>Local Spatial Autocorrelation</strong> and <strong>LISA</strong>. Likewise socio-economic factors like <strong><em>gini, income mean, income median, poverty absolute, poverty relative</em></strong> are only available for the years <strong>2019</strong> &amp; <strong>2022</strong>.</p>
+<p>Users are able to customise the weight matrix by selecting the contiguity method (Queen or Rook) and the spatial weights style (row standardized), and the number of simulations to run. This affects <strong>Global and Local Autocorrelation</strong> and <strong>LISA</strong></p>
+<p>Users are able to select the type of LISA classification and confidence level which only applies for <strong>LISA</strong>. And finally users are able to select the local moran stat which applies only for <strong>Local Spatial Autocorrelation</strong></p>
+</section>
+<section id="global-spatial-autocorrelation-1" class="level4">
+<h4 class="anchored" data-anchor-id="global-spatial-autocorrelation-1">Global Spatial Autocorrelation</h4>
+<p>This is an example of the output for Global Spatial Autocorrelation, it shows the Global Moran Test on the top left, and the Monte-Carlo Simulation on the top right which is to double confirm the results of the Global Moran Test. And the histogram on the bottom shows the distribution of the results from the Monte-Carlo Simulation.</p>
+<p>Having a positive Moran I statistic suggest that there is clustering, while a negative Moran I statistic suggest spatial dispersion. Also a small p-value of &lt; 0.05 suggest that it might not have happened randomly, while a p-value &gt; 0.05 suggest that it might have occured randomly.</p>
+<p><img src="images/clipboard-1196003943.png" class="img-fluid"></p>
+</section>
+<section id="local-spatial-autocorrelation" class="level4">
+<h4 class="anchored" data-anchor-id="local-spatial-autocorrelation">Local Spatial Autocorrelation</h4>
+<p>This is an example of the output for Local Spatial Autocorrelation, where it shows the Local Moran Stat that was chosen indicated by the top right indicator, where it is map along side the type of socio-economic factor that was chosen, indicated by the numbers on the map. From here user can make an inference of whether the Local Moran Stat chosen was statistically significant and whether it correlates to the socio-economic factor that was chosen.</p>
+<p><img src="images/clipboard-3104429770.png" class="img-fluid"></p>
+</section>
+<section id="lisa-1" class="level4">
+<h4 class="anchored" data-anchor-id="lisa-1">LISA</h4>
+<p>An example of the output for LISA where it shows the LISA map based on the type of LISA class that was chosen which is mapped to the socio-economic factor that was chosen.</p>
 <ul>
-<li><p><strong>Income Inequality Data:</strong> Household income inequality by district (<a href="https://data.gov.my/data-catalogue/hh_inequality_district" class="uri">https://data.gov.my/data-catalogue/hh_inequality_district</a>)</p></li>
-<li><p><strong>School Completion Rates Data:</strong> School completion rates by state (<a href="https://data.gov.my/data-catalogue/completion_school_state" class="uri">https://data.gov.my/data-catalogue/completion_school_state</a>)</p></li>
-<li><p><strong>Crime Data:</strong> Crime rates by district (<a href="https://data.gov.my/data-catalogue/crime_district" class="uri">https://data.gov.my/data-catalogue/crime_district</a>)</p></li>
+<li><p><strong>High-Low Outliers:</strong> Districts with a high value of the type of crime, surrounded by neighbouring districts with low values of the type of crime.</p></li>
+<li><p><strong>Low-High Outliers</strong>: Districts with a low value of the type of crime, surrounded by neighbouring districts with high values of the type of crime.</p></li>
+<li><p><strong>High-High Clusters</strong>: Districts with a high value of the type of crime, surrounded by neighbouring Districts with high values of the type of crime.</p></li>
+<li><p><strong>Low-Low Clusters</strong>: Districts with a low value of the type of crime, surrounded by neighbouring Districts with low values of the type of crime.</p></li>
 </ul>
-<p>Data cleaning and preprocessing will involve handling missing values, merging datasets by geographic regions (district or state), and ensuring consistency in temporal coverage.</p>
+<p>Users are to see if there are any significance with the LISA classification with the type of socio-economic factor.</p>
+<p><img src="images/clipboard-2096302652.png" class="img-fluid"></p>
 </section>
-<section id="approach" class="level2">
-<h2 class="anchored" data-anchor-id="approach">5. Approach</h2>
-<p>This project will use R Studio as the primary platform for data analysis and visualization.</p>
-<p>Our analysis will follow these key steps:</p>
-<ul>
-<li><p><strong>Exploratory Spatial Data Analysis (ESDA):</strong> Using tools like Moran’s I and Local Indicators of Spatial Association (LISA), we will identify clusters of income inequality and school completion rates to understand if they are randomly distributed or form spatial patterns.</p></li>
-<li><p><strong>Geographically Weighted Regression (GWR):</strong> To explore the relationship between income inequality and school completion rates, we will use GWR to assess how the strength of this relationship varies across regions. We will also include crime rates as a potential confounding variable to see how it interacts with our main variables of interest.</p></li>
-</ul>
 </section>
-<section id="prototypes-storyboards" class="level2">
-<h2 class="anchored" data-anchor-id="prototypes-storyboards">6. Prototypes &amp; Storyboards</h2>
-<p><img src="images/clipboard-3263130708.png" class="img-fluid"></p>
-<p><img src="images/clipboard-3941781410.png" class="img-fluid"></p>
+<section id="emerging-hot-spot-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="emerging-hot-spot-analysis">Emerging Hot Spot Analysis</h3>
+<p>This tab allows users to run <a href="https://sfdep.josiahparry.com/articles/understanding-emerging-hotspots#using-emerging_hotspot_analysis"><code>emerging_hotspot_analysis()</code></a> on the type of crime. Users are able to select the type of crime to perform emerging hot spot analysis on, number of simulations to let it run and choosing the significance level which would affect the outputs on the right.</p>
+<p>Users are able to see the hot spot classification on the map after running the analysis and the distribution of the classification on the bar graph below.</p>
+<p>For the classification:</p>
+<p>Credits to <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/space-time-pattern-mining/learnmoreemerging.htm#GUID-09587AFC-F5EC-4AEB-BE8F-0E0A26AB9230" class="uri">https://pro.arcgis.com/en/pro-app/latest/tool-reference/space-time-pattern-mining/learnmoreemerging.htm#GUID-09587AFC-F5EC-4AEB-BE8F-0E0A26AB9230</a></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Classification</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>No Pattern Detected</td>
+<td>Does not fall into any of the hot or cold spot patterns defined below.</td>
+</tr>
+<tr class="even">
+<td>New Hot Spot</td>
+<td>A location that is a statistically significant hot spot for the final time step and has never been a statistically significant hot spot before.</td>
+</tr>
+<tr class="odd">
+<td>Consecutive Hot Spot</td>
+<td>A location with a single uninterrupted run of at least two statistically significant hot spot bins in the final time-step intervals. The location has never been a statistically significant hot spot prior to the final hot spot run and less than 90 percent of all bins are statistically significant hot spots.</td>
+</tr>
+<tr class="even">
+<td>Intensifying Hot Spot</td>
+<td>A location that has been a statistically significant hot spot for 90 percent of the time-step intervals, including the final time step. In addition, the intensity of clustering of high counts in each time step is increasing overall and that increase is statistically significant.</td>
+</tr>
+<tr class="odd">
+<td>Persistent Hot Spot</td>
+<td>A location that has been a statistically significant hot spot for 90 percent of the time-step intervals with no discernible trend in the intensity of clustering over time.</td>
+</tr>
+<tr class="even">
+<td>Diminishing Hot Spot</td>
+<td>A location that has been a statistically significant hot spot for 90 percent of the time-step intervals, including the final time step. In addition, the intensity of clustering in each time step is decreasing overall and that decrease is statistically significant.</td>
+</tr>
+<tr class="odd">
+<td>Sporadic Hot Spot</td>
+<td>A statistically significant hot spot for the final time-step interval with a history of also being an on-again and off-again hot spot. Less than 90 percent of the time-step intervals have been statistically significant hot spots and none of the time-step intervals have been statistically significant cold spots.</td>
+</tr>
+<tr class="even">
+<td>Oscillating Hot Spot</td>
+<td>A statistically significant hot spot for the final time-step interval that has a history of also being a statistically significant cold spot during a prior time step. Less than 90 percent of the time-step intervals have been statistically significant hot spots.</td>
+</tr>
+<tr class="odd">
+<td>Historical Hot Spot</td>
+<td>The most recent time period is not hot, but at least 90 percent of the time-step intervals have been statistically significant hot spots.</td>
+</tr>
+<tr class="even">
+<td>New Cold Spot</td>
+<td>A location that is a statistically significant cold spot for the final time step and has never been a statistically significant cold spot before.</td>
+</tr>
+<tr class="odd">
+<td>Consecutive Cold Spot</td>
+<td>A location with a single uninterrupted run of at least two statistically significant cold spot bins in the final time-step intervals. The location has never been a statistically significant cold spot prior to the final cold spot run and less than 90 percent of all bins are statistically significant cold spots.</td>
+</tr>
+<tr class="even">
+<td>Intensifying Cold Spot</td>
+<td>A location that has been a statistically significant cold spot for 90 percent of the time-step intervals, including the final time step. In addition, the intensity of clustering of low counts in each time step is increasing overall and that increase is statistically significant.</td>
+</tr>
+<tr class="odd">
+<td>Persistent Cold Spot</td>
+<td>A location that has been a statistically significant cold spot for 90 percent of the time-step intervals with no discernible trend in the intensity of clustering of counts over time.</td>
+</tr>
+<tr class="even">
+<td>Diminishing Cold Spot</td>
+<td>A location that has been a statistically significant cold spot for 90 percent of the time-step intervals, including the final time step. In addition, the intensity of clustering of low counts in each time step is decreasing overall and that decrease is statistically significant.</td>
+</tr>
+<tr class="odd">
+<td>Sporadic Cold Spot</td>
+<td>A statistically significant cold spot for the final time-step interval with a history of also being an on-again and off-again cold spot. Less than 90 percent of the time-step intervals have been statistically significant cold spots and none of the time-step intervals have been statistically significant hot spots.</td>
+</tr>
+<tr class="even">
+<td>Oscillating Cold Spot</td>
+<td>A statistically significant cold spot for the final time-step interval that has a history of also being a statistically significant hot spot during a prior time step. Less than 90 percent of the time-step intervals have been statistically significant cold spots.</td>
+</tr>
+<tr class="odd">
+<td>Historical Cold Spot</td>
+<td>The most recent time period is not cold, but at least 90 percent of the time-step intervals have been statistically significant cold spots.</td>
+</tr>
+</tbody>
+</table>
+<p><img src="images/clipboard-4264450265.png" class="img-fluid"></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

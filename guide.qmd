@@ -1,0 +1,134 @@
+---
+title: "User Guide"
+---
+
+This serves as guide on how to use our [Shiny application](https://is415-kwee-cheng.shinyapps.io/G1T9-AbangSmith/)
+
+## Navigation Bar
+
+![](images/clipboard-1207142688.png)
+
+This serves as the main point to navigate the different types of analysis that we did
+
+## EDA
+
+### Data Set
+
+This tab allows users to visualise the distribution of the different types of crime, including socio-economic factors. They are presented with a histogram (top-left), box-plot (top-right) and a choropleth map at the bottom.
+
+![](images/clipboard-4053125080.png)
+
+Users are able to select the variable they would like to explore whether it be socio-economic factors or the different types of crime. They are also able to specify the year they would like to explore. It should be noted that socio-economic factors like ***gini, income mean, income median, poverty absolute, poverty relative*** are only available for the years **2019** & **2022.** As this is what was given on [data.gov.my](data.gov.my)
+
+### LISA
+
+In this tab users are able to explore LISA classification for socio-economic factors as those were not covered in the Spatial Autocorrelation.
+
+![](images/clipboard-1741873807.png)
+
+Users are able to select the socio-economic factors that they would like for LISA classification and the type of LISA classification. Likewise socio-economic factors like ***gini, income mean, income median, poverty absolute, poverty relative*** are only available for the years **2019** & **2022**.
+
+## Geographically Weighted Regression
+
+### Assumptions Checks
+
+#### Correlation Analysis
+
+![](images/clipboard-3410578648.png)
+
+#### Model Performance
+
+![](images/clipboard-2130314413.png)
+
+#### Check
+
+![](images/clipboard-4202787560.png)
+
+### GWR Model
+
+#### Map
+
+#### Stats
+
+## Spatial Autocorrelation
+
+### Global and Local Spatial Autocorrelation
+
+#### Global Spatial Autocorrelation
+
+![](images/clipboard-601498860.png)
+
+![](images/clipboard-147141593.png)
+
+This tab allows user to view global and local spatial autocorrelation, we decided to combine it into one tab as a few of the inputs are overlapped between global and local. The results are then displayed on the three tabs on the right.
+
+\
+From here users are able to select the type of crime and year which applies for **global and local spatial autocorrelation** and **LISA**.
+
+For choosing which relationship to map to, users are able to choose the socio-economic factor that they would like to show alongside for **Local Spatial Autocorrelation** and **LISA**. Likewise socio-economic factors like ***gini, income mean, income median, poverty absolute, poverty relative*** are only available for the years **2019** & **2022**.
+
+Users are able to customise the weight matrix by selecting the contiguity method (Queen or Rook) and the spatial weights style (row standardized), and the number of simulations to run. This affects **Global and Local Autocorrelation** and **LISA**
+
+Users are able to select the type of LISA classification and confidence level which only applies for **LISA**. And finally users are able to select the local moran stat which applies only for **Local Spatial Autocorrelation**
+
+#### Global Spatial Autocorrelation
+
+This is an example of the output for Global Spatial Autocorrelation, it shows the Global Moran Test on the top left, and the Monte-Carlo Simulation on the top right which is to double confirm the results of the Global Moran Test. And the histogram on the bottom shows the distribution of the results from the Monte-Carlo Simulation.
+
+Having a positive Moran I statistic suggest that there is clustering, while a negative Moran I statistic suggest spatial dispersion. Also a small p-value of \< 0.05 suggest that it might not have happened randomly, while a p-value \> 0.05 suggest that it might have occured randomly.
+
+![](images/clipboard-1196003943.png)
+
+#### Local Spatial Autocorrelation
+
+This is an example of the output for Local Spatial Autocorrelation, where it shows the Local Moran Stat that was chosen indicated by the top right indicator, where it is map along side the type of socio-economic factor that was chosen, indicated by the numbers on the map. From here user can make an inference of whether the Local Moran Stat chosen was statistically significant and whether it correlates to the socio-economic factor that was chosen.
+
+![](images/clipboard-3104429770.png)
+
+#### LISA
+
+An example of the output for LISA where it shows the LISA map based on the type of LISA class that was chosen which is mapped to the socio-economic factor that was chosen.
+
+-   **High-Low Outliers:** Districts with a high value of the type of crime, surrounded by neighbouring districts with low values of the type of crime.
+
+-   **Low-High Outliers**: Districts with a low value of the type of crime, surrounded by neighbouring districts with high values of the type of crime.
+
+-   **High-High Clusters**: Districts with a high value of the type of crime, surrounded by neighbouring Districts with high values of the type of crime.
+
+-   **Low-Low Clusters**: Districts with a low value of the type of crime, surrounded by neighbouring Districts with low values of the type of crime.
+
+Users are to see if there are any significance with the LISA classification with the type of socio-economic factor.
+
+![](images/clipboard-2096302652.png)
+
+### Emerging Hot Spot Analysis
+
+This tab allows users to run [`emerging_hotspot_analysis()`](https://sfdep.josiahparry.com/articles/understanding-emerging-hotspots#using-emerging_hotspot_analysis) on the type of crime. Users are able to select the type of crime to perform emerging hot spot analysis on, number of simulations to let it run and choosing the significance level which would affect the outputs on the right.
+
+Users are able to see the hot spot classification on the map after running the analysis and the distribution of the classification on the bar graph below.
+
+For the classification:
+
+Credits to <https://pro.arcgis.com/en/pro-app/latest/tool-reference/space-time-pattern-mining/learnmoreemerging.htm#GUID-09587AFC-F5EC-4AEB-BE8F-0E0A26AB9230>
+
+| Classification | Definition |
+|----|----|
+| No Pattern Detected | Does not fall into any of the hot or cold spot patterns defined below. |
+| New Hot Spot | A location that is a statistically significant hot spot for the final time step and has never been a statistically significant hot spot before. |
+| Consecutive Hot Spot | A location with a single uninterrupted run of at least two statistically significant hot spot bins in the final time-step intervals. The location has never been a statistically significant hot spot prior to the final hot spot run and less than 90 percent of all bins are statistically significant hot spots. |
+| Intensifying Hot Spot | A location that has been a statistically significant hot spot for 90 percent of the time-step intervals, including the final time step. In addition, the intensity of clustering of high counts in each time step is increasing overall and that increase is statistically significant. |
+| Persistent Hot Spot | A location that has been a statistically significant hot spot for 90 percent of the time-step intervals with no discernible trend in the intensity of clustering over time. |
+| Diminishing Hot Spot | A location that has been a statistically significant hot spot for 90 percent of the time-step intervals, including the final time step. In addition, the intensity of clustering in each time step is decreasing overall and that decrease is statistically significant. |
+| Sporadic Hot Spot | A statistically significant hot spot for the final time-step interval with a history of also being an on-again and off-again hot spot. Less than 90 percent of the time-step intervals have been statistically significant hot spots and none of the time-step intervals have been statistically significant cold spots. |
+| Oscillating Hot Spot | A statistically significant hot spot for the final time-step interval that has a history of also being a statistically significant cold spot during a prior time step. Less than 90 percent of the time-step intervals have been statistically significant hot spots. |
+| Historical Hot Spot | The most recent time period is not hot, but at least 90 percent of the time-step intervals have been statistically significant hot spots. |
+| New Cold Spot | A location that is a statistically significant cold spot for the final time step and has never been a statistically significant cold spot before. |
+| Consecutive Cold Spot | A location with a single uninterrupted run of at least two statistically significant cold spot bins in the final time-step intervals. The location has never been a statistically significant cold spot prior to the final cold spot run and less than 90 percent of all bins are statistically significant cold spots. |
+| Intensifying Cold Spot | A location that has been a statistically significant cold spot for 90 percent of the time-step intervals, including the final time step. In addition, the intensity of clustering of low counts in each time step is increasing overall and that increase is statistically significant. |
+| Persistent Cold Spot | A location that has been a statistically significant cold spot for 90 percent of the time-step intervals with no discernible trend in the intensity of clustering of counts over time. |
+| Diminishing Cold Spot | A location that has been a statistically significant cold spot for 90 percent of the time-step intervals, including the final time step. In addition, the intensity of clustering of low counts in each time step is decreasing overall and that decrease is statistically significant. |
+| Sporadic Cold Spot | A statistically significant cold spot for the final time-step interval with a history of also being an on-again and off-again cold spot. Less than 90 percent of the time-step intervals have been statistically significant cold spots and none of the time-step intervals have been statistically significant hot spots. |
+| Oscillating Cold Spot | A statistically significant cold spot for the final time-step interval that has a history of also being a statistically significant hot spot during a prior time step. Less than 90 percent of the time-step intervals have been statistically significant cold spots. |
+| Historical Cold Spot | The most recent time period is not cold, but at least 90 percent of the time-step intervals have been statistically significant cold spots. |
+
+![](images/clipboard-4264450265.png)
