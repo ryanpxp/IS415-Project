@@ -686,7 +686,7 @@ server <- function(input, output, session){
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     tmap_mode("view")
     # Map creation using tmap
-    localMI_map <- tm_shape(df) +
+    localMI_map <- tm_shape(df,simplify = 0.01,raster.downsample = TRUE) +
       tm_fill(col = input$localmoranstats, 
               style = "pretty", 
               palette = "RdBu", 
@@ -704,7 +704,7 @@ server <- function(input, output, session){
     
     tmap_mode("view")
     lisamap <- 
-      tm_shape(df) + 
+      tm_shape(df,simplify = 0.01,raster.downsample = TRUE) + 
       tm_fill(col = input$LisaClass2, title = (paste("Significance:", input$LisaClass2))) +
       tm_borders(alpha = 0.7) +
       tm_layout(main.title = "LISA Map", main.title.size = 1)
@@ -721,10 +721,10 @@ server <- function(input, output, session){
       filter(p_value < (1 - as.numeric(input$MoranConf)))
     
     tmap_mode("view")
-    lisamap <- tm_shape(df,simplify = 0.05,raster.downsample = TRUE) +
+    lisamap <- tm_shape(df,simplify = 0.01,raster.downsample = TRUE) +
       tm_polygons() + 
       tm_borders(alpha = 0.5) + 
-      tm_shape(lisa_sig) + 
+      tm_shape(lisa_sig,simplify = 0.01,raster.downsample = TRUE) + 
       tm_fill(col = input$LisaClass, title = (paste("Significance:", input$LisaClass))) +
       tm_text(input$relationshipVariable, size = 0.6, col = "black") +
       tm_borders(alpha = 0.7) +
@@ -740,10 +740,10 @@ server <- function(input, output, session){
     EHSA_sig <- df %>%
       filter(p_value < (1 - as.numeric(input$MoranConf2)))
     
-    ehsamap <- tm_shape(df,simplify = 0.05,raster.downsample = TRUE) +
+    ehsamap <- tm_shape(df,simplify = 0.01,raster.downsample = TRUE) +
       tm_polygons() + 
       tm_borders(alpha = 0.5) +
-      tm_shape(EHSA_sig) +
+      tm_shape(EHSA_sig,simplify = 0.01,raster.downsample = TRUE) +
       tm_fill(col = "classification", title = "Classification") + 
       tm_borders(alpha = 0.4) +
       tm_layout(main.title = "EHSA", main.title.size = 1)
