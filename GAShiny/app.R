@@ -30,15 +30,7 @@ ui <-
                                   sidebarPanel(
                                     titlePanel("EDA"),
                                     selectInput(inputId = "EDAVariable", "Select variable for EDA",
-                                                choices = c("Participation rate" = "p_rate",
-                                                            "Unemployment rate" = "u_rate",
-                                                            "Causing Injury" = "causing_injury",
-                                                            "Murder" = "murder",
-                                                            "Rape" = "rape",
-                                                            "Break In" = "break_in",
-                                                            "Other Theft" = "theft_other",
-                                                            "Robbery" = "robbery",
-                                                            "Vehicle Theft" = "vehicle_theft")),
+                                                choices = NULL),
                                     radioButtons(inputId = "EDAyear",
                                                  label = "Year",
                                                  choices = c("2019", 
@@ -245,12 +237,12 @@ ui <-
                             )
                        )
            ),
-  tabPanel("Spatial Correlation",
+  tabPanel("Spatial Autocorrelation",
            tabsetPanel(type = "tabs",
-                       tabPanel("Global and Local Spatial Correlation",
+                       tabPanel("Global and Local Spatial Autocorrelation",
                                 sidebarLayout(
                                   sidebarPanel(
-                                    titlePanel("Global and Local Spatial"),
+                                    titlePanel("Global and Local Spatial Autocorrelation"),
                                     fluidRow(column(7,
                                                     selectInput(inputId = "categoryVariable",
                                                                 label = "Select type of crime",
@@ -313,7 +305,7 @@ ui <-
                                   ),
                                   mainPanel(
                                     tabsetPanel(type = "tabs",
-                                                tabPanel("Global Spatial Correlation",
+                                                tabPanel("Global Spatial Autocorrelation",
                                                          fluidRow(
                                                            column(6,
                                                                   verbatimTextOutput("GlobalTest") %>% withSpinner(color = "#3498db"),
@@ -324,7 +316,7 @@ ui <-
                                                          ),
                                                          
                                                          plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
-                                                tabPanel("Local Moran Statistics", 
+                                                tabPanel("Local Spatial Autocorrelation", 
                                                          tmapOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
                                                 ),
                                                 tabPanel("LISA",
@@ -414,19 +406,55 @@ server <- function(input, output, session){
                                "Income Median" = "income_median",
                                "Poverty Absolute" = "poverty_absolute",
                                "Poverty Relative" = "poverty_relative",
+                               "Participation rate" = "p_rate",
                                "Unemployment rate" = "u_rate")
     } else {
       unique_relationship <- c("Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate",
-                               "Crimes" = "crimes")
+                               "Unemployment rate" = "u_rate")
     }
     unique_relationship
     
   })
   
+  #Load EDAVariable based on year selected for data tab
+  filtered_EDA2 <- reactive({
+    req(input$EDAyear)
+    if (input$EDAyear %in% c("2019", "2022")) {
+      unique_relationship <- c("Income Inequality (Gini Coefficient)" = "gini",
+                               "Income Mean" = "income_mean",
+                               "Income Median" = "income_median",
+                               "Poverty Absolute" = "poverty_absolute",
+                               "Poverty Relative" = "poverty_relative",
+                               "Participation rate" = "p_rate",
+                               "Unemployment rate" = "u_rate",
+                               "Causing Injury" = "causing_injury",
+                               "Murder" = "murder",
+                               "Rape" = "rape",
+                               "Break In" = "break_in",
+                               "Other Theft" = "theft_other",
+                               "Robbery" = "robbery",
+                               "Vehicle Theft" = "vehicle_theft")
+    } else {
+      unique_relationship <- c("Participation rate" = "p_rate",
+                               "Unemployment rate" = "u_rate",
+                               "Causing Injury" = "causing_injury",
+                               "Murder" = "murder",
+                               "Rape" = "rape",
+                               "Break In" = "break_in",
+                               "Other Theft" = "theft_other",
+                               "Robbery" = "robbery",
+                               "Vehicle Theft" = "vehicle_theft")
+    }
+    unique_relationship
+    
+  })
   # Update district input based on selected province
   observe({
     updateSelectInput(session, "EDAVariable2", choices = filtered_EDA())
+  })
+  
+  observe({
+    updateSelectInput(session, "EDAVariable", choices = filtered_EDA2())
   })
   
   #Load relationshipVariable based on year selected
