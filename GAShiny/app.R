@@ -1,4 +1,5 @@
 library(Kendall)
+library(rmapshaper)
 pacman::p_load(shiny, shinyjs, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
              st, tidyverse, raster, tmaptools, ggplot2, spatstat,knitr,performance, see, GWmodel,olsrr, ggstatsplot)
 msia <- read_rds("data/rds/test.rds")
