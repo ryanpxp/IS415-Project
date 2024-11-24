@@ -138,11 +138,17 @@ ui <-
                                   mainPanel(
                                     tabsetPanel(type = "tabs",
                                                 tabPanel("Correlation analysis", 
-                                                         plotOutput("CorrelationMatrix") %>% withSpinner(color = "#3498db")
+                                                         plotOutput("CorrelationMatrix") %>% withSpinner(color = "#3498db"),
+                                                         helpText("Tips:"),
+                                                         helpText("- Use backspace to remove a selected variable."),
+                                                         helpText("- The plot requires selection of at least 2 independent variables."),
+                                                         helpText("- Variables with high correlation (> 0.75) should avoid being used together."),
                                                 ),
                                                 tabPanel("Model Performance", 
                                                          plotOutput("ModelPerformance") %>% withSpinner(color = "#3498db"),
-                                                         verbatimTextOutput("ModelPerformance2") %>% withSpinner(color = "#3498db")
+                                                         verbatimTextOutput("ModelPerformance2") %>% withSpinner(color = "#3498db"),
+                                                         helpText("Tips:"),
+                                                         helpText("- Use backspace to remove a selected variable."),
                                                 ),
                                                 tabPanel("Checks", 
                                                          
@@ -156,6 +162,12 @@ ui <-
                                                                 plotOutput("Multicollinearity") %>% withSpinner(color = "#3498db"),
                                                                 
                                                          )),
+                                                         helpText("Tips:"),
+                                                         helpText("- Use backspace to remove a selected variable."),
+                                                         helpText("- Linearity: A good indication of linearity is where reference line should be flat and horizontal."),
+                                                         helpText("- Noramlity: Graph should follow a normal distribution and have a normal curve."),
+                                                         helpText("- Outliers: Points should be between the contour lines."),
+                                                         helpText("- Collinearity: A VIF value > 10 should be removed, as it indicates multicollinearity. The analysis requires selection of at least 2 independent variables. Missing variables are due to significant levels"),
                                                 )
                                     )
                                   )
@@ -238,10 +250,18 @@ ui <-
                                                 tabPanel("Map", 
                                                          tmapOutput("GWR") %>% withSpinner(color = "#3498db"),
                                                          tmapOutput("GWR2") %>% withSpinner(color = "#3498db"),
+                                                         helpText("Tips:"),
+                                                         helpText("- Top map shows the local R-squared geographically."),
+                                                         helpText("- Bottom map shows the selected variable geographically. The option to select variable will appear after plotting the initial map."),
+                                                         helpText("- Light shade means a lower predicted value."),
+                                                         helpText("- Darker shade means a higher predicted value."),
                                                 ),
                                                 tabPanel("Stats", 
                                                          plotOutput("Coefficient") %>% withSpinner(color = "#3498db"),
-                                                         verbatimTextOutput("LM") %>% withSpinner(color = "#3498db")
+                                                         verbatimTextOutput("LM") %>% withSpinner(color = "#3498db"),
+                                                         helpText("Tips:"),
+                                                         helpText("- Top plot shows the predicted coefficient estimates."),
+                                                         helpText("- Bottom shows the in depth data on the model."),
                                                 )
                                                 ),
                                     
