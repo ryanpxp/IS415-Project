@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>IS415-Project - User Guide</title>
+<title>User Guide – IS415-Project</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -83,7 +83,7 @@ ul.task-list li input[type="checkbox"] {
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -110,7 +110,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -176,13 +176,13 @@ ul.task-list li input[type="checkbox"] {
 <section id="data-set" class="level3">
 <h3 class="anchored" data-anchor-id="data-set">Data Set</h3>
 <p>This tab allows users to visualise the distribution of the different types of crime, including socio-economic factors. They are presented with a histogram (top-left), box-plot (top-right) and a choropleth map at the bottom.</p>
-<p><img src="images/clipboard-4053125080.png" class="img-fluid"></p>
+<p><img src="images/clipboard-2075005219.png" class="img-fluid"></p>
 <p>Users are able to select the variable they would like to explore whether it be socio-economic factors or the different types of crime. They are also able to specify the year they would like to explore. It should be noted that socio-economic factors like <strong><em>gini, income mean, income median, poverty absolute, poverty relative</em></strong> are only available for the years <strong>2019</strong> &amp; <strong>2022.</strong> As this is what was given on <a href="data.gov.my">data.gov.my</a></p>
 </section>
 <section id="lisa" class="level3">
 <h3 class="anchored" data-anchor-id="lisa">LISA</h3>
 <p>In this tab users are able to explore LISA classification for socio-economic factors as those were not covered in the Spatial Autocorrelation.</p>
-<p><img src="images/clipboard-1741873807.png" class="img-fluid"></p>
+<p><img src="images/clipboard-2616735900.png" class="img-fluid"></p>
 <p>Users are able to select the socio-economic factors that they would like for LISA classification and the type of LISA classification. Likewise socio-economic factors like <strong><em>gini, income mean, income median, poverty absolute, poverty relative</em></strong> are only available for the years <strong>2019</strong> &amp; <strong>2022</strong>.</p>
 </section>
 </section>
@@ -193,34 +193,34 @@ ul.task-list li input[type="checkbox"] {
 <section id="correlation-analysis" class="level4">
 <h4 class="anchored" data-anchor-id="correlation-analysis">Correlation Analysis</h4>
 <p>This tab allows users to visualise the correlation between independent variables.</p>
-<p><img src="images/image_2024-11-24_17-19-45.png" class="img-fluid"></p>
+<p><img src="images/clipboard-1511046340.png" class="img-fluid"></p>
 <p>Users are able to select the socio-economic factors (independent variables) that they would want to compare and the type of crime classification. These socio-economic factors are only available for the years <strong>2019</strong> &amp; <strong>2022</strong>. Users are also able to select the significant level for the correlation matrix.</p>
 </section>
 <section id="model-performance" class="level4">
 <h4 class="anchored" data-anchor-id="model-performance">Model Performance</h4>
 <p>This tab assists user to in their decision whether to select stepwise regression models or base model by showing its performance.</p>
-<p><img src="images/image_2024-11-24_17-20-13.png" class="img-fluid"></p>
+<p><img src="images/clipboard-1434046340.png" class="img-fluid"></p>
 <p>Users are able to select the socio-economic factors (independent variables) that they would want to compare and the type of crime classification. These socio-economic factors are only available for the years <strong>2019</strong> &amp; <strong>2022</strong>. Users are also able to p value for the stepwise regression models.</p>
 </section>
 <section id="check" class="level4">
 <h4 class="anchored" data-anchor-id="check">Check</h4>
 <p>This tab assists user to conclude if the assumption checks for geographically weighted regression are met. They are presented with plots/graphs of linearity (top-left), normality check (top-right), outliers (bottom-left), and collinearity (bottom-right).</p>
-<p><img src="images/image_2024-11-24_17-20-56.png" class="img-fluid"></p>
+<p><img src="images/clipboard-648945357.png" class="img-fluid"></p>
 </section>
 </section>
 <section id="gwr-model" class="level3">
 <h3 class="anchored" data-anchor-id="gwr-model">GWR Model</h3>
 <section id="map" class="level4">
 <h4 class="anchored" data-anchor-id="map">Map</h4>
-<p><img src="images/image_2024-11-24_15-58-42.png" class="img-fluid"></p>
-<p><img src="images/image_2024-11-24_16-01-29.png" class="img-fluid"></p>
+<p><img src="images/clipboard-2118848233.png" class="img-fluid"></p>
+<p><img src="images/clipboard-2947951428.png" class="img-fluid"></p>
 <p>This tab allows user to compare the local R-squared with that socio-economic factor of their choosing, based on the type of crime and year. Only the years <strong>2019</strong> &amp; <strong>2022 are available</strong> as missing data will influence GWR.</p>
 <p>Users are able to customise the computation function, approach, distancec metric and stepwise regression model.</p>
 <p>After plotting the initial map, user are then able to customise what variables they want to compare with the local R-squared (top map) on the second map (bottom map).</p>
 </section>
 <section id="stats" class="level4">
 <h4 class="anchored" data-anchor-id="stats">Stats</h4>
-<p><img src="images/image_2024-11-24_16-00-26.png" class="img-fluid"></p>
+<p><img src="images/clipboard-984347562.png" class="img-fluid"></p>
 <p>This tab allows user to view the coefficent estimates and the statistics of the regression model given the parameters selected (identical to the <em>Map</em> tab).</p>
 </section>
 </section>
@@ -231,8 +231,8 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="global-and-local-spatial-autocorrelation">Global and Local Spatial Autocorrelation</h3>
 <section id="global-spatial-autocorrelation" class="level4">
 <h4 class="anchored" data-anchor-id="global-spatial-autocorrelation">Global Spatial Autocorrelation</h4>
-<p><img src="images/clipboard-601498860.png" class="img-fluid"></p>
-<p><img src="images/clipboard-147141593.png" class="img-fluid"></p>
+<p><img src="images/clipboard-706669780.png" class="img-fluid"></p>
+<p><img src="images/clipboard-3212065718.png" class="img-fluid"></p>
 <p>This tab allows user to view global and local spatial autocorrelation, we decided to combine it into one tab as a few of the inputs are overlapped between global and local. The results are then displayed on the three tabs on the right.</p>
 <p><br>
 From here users are able to select the type of crime and year which applies for <strong>global and local spatial autocorrelation</strong> and <strong>LISA</strong>.</p>
@@ -244,12 +244,12 @@ From here users are able to select the type of crime and year which applies for 
 <h4 class="anchored" data-anchor-id="global-spatial-autocorrelation-1">Global Spatial Autocorrelation</h4>
 <p>This is an example of the output for Global Spatial Autocorrelation, it shows the Global Moran Test on the top left, and the Monte-Carlo Simulation on the top right which is to double confirm the results of the Global Moran Test. And the histogram on the bottom shows the distribution of the results from the Monte-Carlo Simulation.</p>
 <p>Having a positive Moran I statistic suggest that there is clustering, while a negative Moran I statistic suggest spatial dispersion. Also a small p-value of &lt; 0.05 suggest that it might not have happened randomly, while a p-value &gt; 0.05 suggest that it might have occured randomly.</p>
-<p><img src="images/clipboard-1196003943.png" class="img-fluid"></p>
+<p><img src="images/clipboard-3876931765.png" class="img-fluid"></p>
 </section>
 <section id="local-spatial-autocorrelation" class="level4">
 <h4 class="anchored" data-anchor-id="local-spatial-autocorrelation">Local Spatial Autocorrelation</h4>
 <p>This is an example of the output for Local Spatial Autocorrelation, where it shows the Local Moran Stat that was chosen indicated by the top right indicator, where it is map along side the type of socio-economic factor that was chosen, indicated by the numbers on the map. From here user can make an inference of whether the Local Moran Stat chosen was statistically significant and whether it correlates to the socio-economic factor that was chosen.</p>
-<p><img src="images/clipboard-3104429770.png" class="img-fluid"></p>
+<p><img src="images/clipboard-919892029.png" class="img-fluid"></p>
 </section>
 <section id="lisa-1" class="level4">
 <h4 class="anchored" data-anchor-id="lisa-1">LISA</h4>
@@ -261,7 +261,7 @@ From here users are able to select the type of crime and year which applies for 
 <li><p><strong>Low-Low Clusters</strong>: Districts with a low value of the type of crime, surrounded by neighbouring Districts with low values of the type of crime.</p></li>
 </ul>
 <p>Users are to see if there are any significance with the LISA classification with the type of socio-economic factor.</p>
-<p><img src="images/clipboard-2096302652.png" class="img-fluid"></p>
+<p><img src="images/clipboard-33597769.png" class="img-fluid"></p>
 </section>
 </section>
 <section id="emerging-hot-spot-analysis" class="level3">
@@ -352,7 +352,7 @@ From here users are able to select the type of crime and year which applies for 
 </tr>
 </tbody>
 </table>
-<p><img src="images/clipboard-4264450265.png" class="img-fluid"></p>
+<p><img src="images/clipboard-2409354213.png" class="img-fluid"></p>
 
 
 </section>
@@ -394,18 +394,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -437,7 +426,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -445,7 +456,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {

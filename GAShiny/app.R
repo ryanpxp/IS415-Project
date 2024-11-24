@@ -29,7 +29,7 @@ ui <-
                                 sidebarLayout(
                                   sidebarPanel(
                                     titlePanel("EDA"),
-                                    p("Click on", strong("Plot"), "to generate the output"),
+                                    helpText("Click on", strong("Plot"), "to generate the output"),
                                     selectInput(inputId = "EDAVariable", "Select variable for EDA",
                                                 choices = NULL),
                                     radioButtons(inputId = "EDAyear",
@@ -45,15 +45,15 @@ ui <-
                                     fluidRow(
                                       column(6,
                                              plotOutput("edaHistogram") %>% withSpinner(color = "#3498db"),
-                                             p("This histogram helps to show the distribution of the EDA variable")
+                                             helpText("This histogram helps to show the distribution of the EDA variable")
                                       ),
                                       column(6,
                                              plotOutput("edaBoxplot") %>% withSpinner(color = "#3498db"),
-                                             p("This boxplot helps to find any outliers in the EDA variable")
+                                             helpText("This boxplot helps to find any outliers in the EDA variable")
                                       )
                                     ),
                                         plotOutput("qtmPlot") %>% withSpinner(color = "#3498db"),
-                                        p("This map shows the distribution of the EDA variable on the Malaysia map")
+                                        helpText("This map shows the distribution of the EDA variable on the Malaysia map")
                                   )
                                 )
                               ),
@@ -61,6 +61,7 @@ ui <-
                                 sidebarLayout(
                                   sidebarPanel(
                                     titlePanel("LISA"),
+                                    helpText("Click on", strong("Plot"), "to generate the output"),
                                     selectInput(inputId = "EDAVariable2", "Select EDA variable for LISA",
                                                 choices = NULL),
                                     selectInput("LisaClass2", "Select Lisa Classification",
@@ -78,7 +79,8 @@ ui <-
                                     actionButton("EDAUpdate2", "Plot"),
                                   ),
                                   mainPanel(
-                                    tmapOutput("LISA2") %>% withSpinner(color = "#3498db")
+                                    tmapOutput("LISA2") %>% withSpinner(color = "#3498db"),
+                                    helpText("This map shows the LISA classification of the EDA variable")
                                   )
                                 )
                        ),
@@ -90,6 +92,7 @@ ui <-
                                 sidebarLayout(
                                   sidebarPanel(
                                     titlePanel("Data Selection"),
+                                    helpText("Click on", strong("Plot"), "to generate the output"),
                                     selectInput("IndependentVar", "Select Independent Variable (Backspace to remove selection)",
                                                 choices = c("Poverty relative" = "poverty_relative",
                                                             "Poverty absolute" = "poverty_absolute",
@@ -181,6 +184,7 @@ ui <-
                                 sidebarLayout(
                                   sidebarPanel(
                                     titlePanel("Data Selection"),
+                                    helpText("Click on", strong("Plot"), "to generate the output"),
                                     selectInput("IndependentVar2", "Select Independent Variable (Backspace to remove selection)",
                                                 choices = c("Poverty relative" = "poverty_relative",
                                                             "Poverty absolute" = "poverty_absolute",
@@ -282,6 +286,7 @@ ui <-
                                 sidebarLayout(
                                   sidebarPanel(
                                     titlePanel("Global and Local Spatial Autocorrelation"),
+                                    helpText("Click on", strong("Plot"), "to generate the output"),
                                     fluidRow(column(7,
                                                     selectInput(inputId = "categoryVariable",
                                                                 label = "Select type of crime",
@@ -340,7 +345,7 @@ ui <-
                                                 label = "Select Confidence level", 
                                                 min = 0.05, max = 0.99,
                                                 value = 0.75, step = 0.05),
-                                    actionButton("MoranUpdate", "Plot Map"),
+                                    actionButton("MoranUpdate", "Plot"),
                                   ),
                                   mainPanel(
                                     tabsetPanel(type = "tabs",
@@ -348,18 +353,22 @@ ui <-
                                                          fluidRow(
                                                            column(6,
                                                                   verbatimTextOutput("GlobalTest") %>% withSpinner(color = "#3498db"),
+                                                                  helpText("Having a positive Moran I Statistic suggest clustering"),
                                                            ),
                                                            column(6,
                                                                   verbatimTextOutput("GlobalPerm") %>% withSpinner(color = "#3498db"),
+                                                                  helpText("Check the results with the Global Test on the left, to see if it is identical, having a low p-value also suggest that it did not happen randomly."),
                                                            )
                                                          ),
                                                          
                                                          plotOutput("GlobalHistogram") %>% withSpinner(color = "#3498db")),
                                                 tabPanel("Local Spatial Autocorrelation", 
                                                          tmapOutput("LocalMoranMap") %>% withSpinner(color = "#3498db"),
+                                                         helpText("This map shows the output after running Local Moran and mapping it to the socio-economic facotor of choice"),
                                                 ),
                                                 tabPanel("LISA",
-                                                         tmapOutput("LISA") %>% withSpinner(color = "#3498db")
+                                                         tmapOutput("LISA") %>% withSpinner(color = "#3498db"),
+                                                         helpText("This map shows the LISA classification and mapping it to the socio-economic facotor of choice, the LISA classification can be found on our website."),
                                                 ),
                                     )
                                   )
@@ -369,6 +378,7 @@ ui <-
                                 sidebarLayout(
                                   sidebarPanel(
                                     titlePanel("Emerging Hot Spot Analysis"),
+                                    helpText("Click on", strong("Plot"), "to generate the output"),
                                     selectInput(inputId = "categoryVariable2",
                                                 label = "Select type of crime",
                                                 choices = c("Causing Injury" = "causing_injury",
@@ -387,11 +397,13 @@ ui <-
                                                 label = "Select Confidence level", 
                                                 min = 0.05, max = 0.99,
                                                 value = 0.75, step = 0.05),
-                                    actionButton("MoranUpdate2", "Plot Map"),
+                                    actionButton("MoranUpdate2", "Plot"),
                                   ),
                                   mainPanel(
                                     tmapOutput("EHSA") %>% withSpinner(color = "#3498db"),
-                                    plotOutput("EHSABar") %>% withSpinner(color = "#3498db")),
+                                    plotOutput("EHSABar") %>% withSpinner(color = "#3498db"),
+                                    helpText("This shows the classification from running emerging hot spot analysis on the desired variable and its distribution, the classification can be found on our website.")
+                                    ),
                                   
                                 )
                        )
