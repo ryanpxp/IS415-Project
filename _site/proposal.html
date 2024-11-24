@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Team: Abang Smith">
 
-<title>Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia – IS415-Project</title>
+<title>Proposal – IS415-Project</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,22 +24,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,7 +69,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -78,7 +79,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">IS415-Project</span>
     </a>
   </div>
@@ -89,23 +90,27 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../DataWrangling.html"> 
+    <a class="nav-link active" href="./proposal.html" aria-current="page"> 
+<span class="menu-text">Proposal</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./DataWrangling.html"> 
 <span class="menu-text">Data Wrangling</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../poster.html"> 
+    <a class="nav-link" href="./poster.html"> 
 <span class="menu-text">Poster</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../guide.html"> 
+    <a class="nav-link" href="./guide.html"> 
 <span class="menu-text">User Guide</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://is415-kwee-cheng.shinyapps.io/G1T9-AbangSmith/"> 
+    <a class="nav-link" href="https://is415-kwee-cheng.shinyapps.io/AbangSmith/"> 
 <span class="menu-text">Shiny Application</span></a>
   </li>  
 </ul>
@@ -124,7 +129,16 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#section" id="toc-section" class="nav-link active" data-scroll-target="#section"></a></li>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">1. Motivation</a></li>
+  <li><a href="#problem-statement" id="toc-problem-statement" class="nav-link" data-scroll-target="#problem-statement">2. Problem Statement</a></li>
+  <li><a href="#related-work" id="toc-related-work" class="nav-link" data-scroll-target="#related-work">3. Related Work</a>
+  <ul class="collapse">
+  <li><a href="#stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia." id="toc-stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia." class="nav-link" data-scroll-target="#stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia.">3.1 Stimulating Economic Growth, Improving Quality of Life &amp; Enhancing Youth Involvement, Proceedings of International Conference on Contemporary Economic Issues 2014, Kuala Lumpur: Malaysia.</a></li>
+  <li><a href="#the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia" id="toc-the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia" class="nav-link" data-scroll-target="#the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia">3.2 The Impact of Economic Growth, Education Level, and Inflation Rate on Income Inequality in Malaysia</a></li>
+  </ul></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">4. Data</a></li>
+  <li><a href="#approach" id="toc-approach" class="nav-link" data-scroll-target="#approach">5. Approach</a></li>
+  <li><a href="#prototypes-storyboards" id="toc-prototypes-storyboards" class="nav-link" data-scroll-target="#prototypes-storyboards">6. Prototypes &amp; Storyboards</a></li>
   </ul>
 </nav>
     </div>
@@ -133,13 +147,19 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia</h1>
+<h1 class="title">Proposal</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Team: Abang Smith </p>
+          </div>
+  </div>
     
   
     
@@ -150,8 +170,61 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section"></h2>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">1. Motivation</h2>
+<p>Addressing regional crime disparities in Malaysia requires a deeper understanding of the social and economic factors that contribute to criminal activity. This project aims to investigate if socio-economic factors like unemployment and income inequality drive crime rates and whether they are any crime patterns across different areas. By uncovering these relationships through spatial analysis, we hope to provide insights that support targeted public safety initiatives and effective policy interventions to foster safer, more equitable communities.</p>
+</section>
+<section id="problem-statement" class="level2">
+<h2 class="anchored" data-anchor-id="problem-statement">2. Problem Statement</h2>
+<p>Crime rates in Malaysia vary widely across regions and are often influenced by socioeconomic factors. This project explores whether there is a link between crime and factors such as unemployment rates or income inequality, examining how these may drive criminal activity in different areas. The findings aim to provide insights that can inform public safety and economic policies.</p>
+</section>
+<section id="related-work" class="level2">
+<h2 class="anchored" data-anchor-id="related-work">3. Related Work</h2>
+<section id="stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia." class="level3">
+<h3 class="anchored" data-anchor-id="stimulating-economic-growth-improving-quality-of-life-enhancing-youth-involvement-proceedings-of-international-conference-on-contemporary-economic-issues-2014-kuala-lumpur-malaysia.">3.1 Stimulating Economic Growth, Improving Quality of Life &amp; Enhancing Youth Involvement, Proceedings of International Conference on Contemporary Economic Issues 2014, Kuala Lumpur: Malaysia.</h3>
+<p>This paper has shed some light on the relationship between poverty, education and income<br>
+inequality. While overall poverty incidence is low, pockets of poverty remains particularly<br>
+among those living in the rural areas and the Bumiputeras. The incidence of poverty declines<br>
+with the level of education attained by the head of households. This negative correlation<br>
+between education and poverty is consistent with the prediction and this highlights the<br>
+important role played by education, especially at tertiary level and higher in reducing poverty<br>
+While level of poverty declines with education, income inequality increases with education.<br>
+There is an increase in average income from group to group with more and more members<br>
+having higher education but their respective income inequalities are not as clear cut. In other<br>
+words, there exist significant differences in income inequality among sub-groups but with no<br>
+clear pattern.</p>
+<p><a href="https://www.researchgate.net/profile/Hooi-Hooi-Lean/publication/274376082_Lean_HH_Lim_ES_Khoo_SL_Mohd_S_2014_Stimulating_Economic_Growth_Improving_Quality_of_Life_Enhancing_Youth_Involvement_Proceedings_of_International_Conference_on_Contemporary_Economic_Issues_2014_Kuala_/links/551cc2700cf2909047bcad80/Lean-HH-Lim-ES-Khoo-SL-Mohd-S-2014-Stimulating-Economic-Growth-Improving-Quality-of-Life-Enhancing-Youth-Involvement-Proceedings-of-International-Conference-on-Contemporary-Economic-Issue.pdf#page=117">Source</a></p>
+</section>
+<section id="the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia" class="level3">
+<h3 class="anchored" data-anchor-id="the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia">3.2 The Impact of Economic Growth, Education Level, and Inflation Rate on Income Inequality in Malaysia</h3>
+<p>This is an article about income inequality in Malaysia. It discusses the relationship between income inequality and economic growth, education level, and inflation rate. The Gini coefficient is used to measure income inequality. A high Gini coefficient indicates a high level of income inequality. Economic growth in wealthy countries can increase income inequality. However, income inequality in poor countries can impede economic progress.</p>
+<p>The conclusion of the article is that economic growth, education level, and inflation rate all have an impact on income inequality in Malaysia. However, the impact of these factors varies depending on the level of economic development. In Malaysia, economic growth has led to an increase in income inequality. However, increasing education levels and reducing inflation rates can help to reduce income inequality.</p>
+<p><a href="https://hrmars.com/papers_submitted/18136/the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia.pdf">Source</a></p>
+</section>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">4. Data</h2>
+<p>We will leverage the following datasets from the Malaysian government’s open data platform:</p>
+<ul>
+<li><p><strong>Income Inequality Data:</strong> Household income inequality by district (<a href="https://data.gov.my/data-catalogue/hh_inequality_district" class="uri">https://data.gov.my/data-catalogue/hh_inequality_district</a>)</p></li>
+<li><p><strong>School Completion Rates Data:</strong> School completion rates by state (<a href="https://data.gov.my/data-catalogue/completion_school_state" class="uri">https://data.gov.my/data-catalogue/completion_school_state</a>)</p></li>
+<li><p><strong>Crime Data:</strong> Crime rates by district (<a href="https://data.gov.my/data-catalogue/crime_district" class="uri">https://data.gov.my/data-catalogue/crime_district</a>)</p></li>
+</ul>
+<p>Data cleaning and preprocessing will involve handling missing values, merging datasets by geographic regions (district or state), and ensuring consistency in temporal coverage.</p>
+</section>
+<section id="approach" class="level2">
+<h2 class="anchored" data-anchor-id="approach">5. Approach</h2>
+<p>This project will use R Studio as the primary platform for data analysis and visualization.</p>
+<p>Our analysis will follow these key steps:</p>
+<ul>
+<li><p><strong>Exploratory Spatial Data Analysis (ESDA):</strong> Using tools like Moran’s I and Local Indicators of Spatial Association (LISA), we will identify clusters of income inequality and school completion rates to understand if they are randomly distributed or form spatial patterns.</p></li>
+<li><p><strong>Geographically Weighted Regression (GWR):</strong> To explore the relationship between income inequality and school completion rates, we will use GWR to assess how the strength of this relationship varies across regions. We will also include crime rates as a potential confounding variable to see how it interacts with our main variables of interest.</p></li>
+</ul>
+</section>
+<section id="prototypes-storyboards" class="level2">
+<h2 class="anchored" data-anchor-id="prototypes-storyboards">6. Prototypes &amp; Storyboards</h2>
+<p><img src="images/clipboard-3263130708.png" class="img-fluid"></p>
+<p><img src="images/clipboard-3941781410.png" class="img-fluid"></p>
 
 
 </section>

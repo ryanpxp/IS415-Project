@@ -1,5 +1,0 @@
----
-title: "Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia"
----
-
-## 

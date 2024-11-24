@@ -1,5 +1,6 @@
 ---
 title: "Data Wrangling"
+author: "Team: Abang Smith"
 ---
 
 This serves as a guide on how we did data wrangling on the different data sets. Initially the Shiny application runs fine locally with the initial rds that we saved and loaded. However upon deploying we found that the rds file was too big for the Shiny application so additional steps had to be taken to reduce the rds file.

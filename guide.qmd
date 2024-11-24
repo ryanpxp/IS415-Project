@@ -1,8 +1,9 @@
 ---
 title: "User Guide"
+author: "Team: Abang Smith"
 ---
 
-This serves as guide on how to use our [Shiny application](https://is415-kwee-cheng.shinyapps.io/G1T9-AbangSmith/)
+This serves as guide on how to use our [Shiny application](https://is415-kwee-cheng.shinyapps.io/AbangSmith/)
 
 ## Navigation Bar
 

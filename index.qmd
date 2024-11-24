@@ -1,74 +1,18 @@
 ---
 title: "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia"
 author: "Team: Abang Smith"
-date: "October 13, 2024"
-date-modified: "last-modified"
-execute: 
-  eval: true
-  echo: true
-  freeze: true
 ---
 
-## 1. Motivation
+![](images/clipboard-2312124942.png)
 
-Intuitively, education plays a critical role in determining future economic opportunities and might be influenced by socio-economic conditions such as income inequality. However, school completion rates vary significantly across districts in Malaysia.
+**`AbangSmith`** is a Shiny application that is designed to explore and analyse the spatial relationships between crime rates and socio-economic factors in Malaysia, such as unemployment rates and income inequality. Leveraging interactive visualisations and geospatial analysis, the application provides users with the tools to uncover regional crime disparities and patterns. By integrating data-driven insights with user-friendly functionality, the platform aims to support researchers, policymakers, and community stakeholders in understanding the drivers of criminal activity.
 
-This project aims to explore the spatial relationship between income inequality, school completion rates and crime rates, with the goal of identifying districts where disparities are most pronounced. By using geospatial methods, we seek to uncover spatial patterns that can help policymakers target interventions more effectively.
+The application features a range of exploratory data analysis (EDA) tools, such as histograms, boxplots, and spatial maps, allowing users to visualise and analyse crime data alongside relevant socio-economic indicators. Through these capabilities, users can identify trends, patterns, and potential hotspots of criminal activity. The ultimate goal of this tool is to facilitate informed decision-making and empower targeted policy interventions to promote public safety and social equity across Malaysia.
 
-## 2. Problem Statement
+The Shiny application comprises of three pages:
 
-Despite Malaysia’s advancements in education, gaps in school completion rates persist across regions. One significant factor contributing to this is income inequality. Our project aims to answer the question: How does income inequality impact school completion rates across different regions of Malaysia? Additionally, we will investigate how other factors, such as regional crime rates, may interact with these variables to further affect educational outcomes.
+-   **Explanatory Data Analysis (EDA)**: Allows to generate histogram, box-plot, choropleth maps and LISA map consisting of socio-economic factors.
 
-## 3. Related Work
+-   **Geographically Weighted Regression**:
 
-### 3.1 Stimulating Economic Growth, Improving Quality of Life & Enhancing Youth Involvement, Proceedings of International Conference on Contemporary Economic Issues 2014, Kuala Lumpur: Malaysia.
-
-This paper has shed some light on the relationship between poverty, education and income\
-inequality. While overall poverty incidence is low, pockets of poverty remains particularly\
-among those living in the rural areas and the Bumiputeras. The incidence of poverty declines\
-with the level of education attained by the head of households. This negative correlation\
-between education and poverty is consistent with the prediction and this highlights the\
-important role played by education, especially at tertiary level and higher in reducing poverty\
-While level of poverty declines with education, income inequality increases with education.\
-There is an increase in average income from group to group with more and more members\
-having higher education but their respective income inequalities are not as clear cut. In other\
-words, there exist significant differences in income inequality among sub-groups but with no\
-clear pattern.
-
-[Source](https://www.researchgate.net/profile/Hooi-Hooi-Lean/publication/274376082_Lean_HH_Lim_ES_Khoo_SL_Mohd_S_2014_Stimulating_Economic_Growth_Improving_Quality_of_Life_Enhancing_Youth_Involvement_Proceedings_of_International_Conference_on_Contemporary_Economic_Issues_2014_Kuala_/links/551cc2700cf2909047bcad80/Lean-HH-Lim-ES-Khoo-SL-Mohd-S-2014-Stimulating-Economic-Growth-Improving-Quality-of-Life-Enhancing-Youth-Involvement-Proceedings-of-International-Conference-on-Contemporary-Economic-Issue.pdf#page=117)
-
-### 3.2 The Impact of Economic Growth, Education Level, and Inflation Rate on Income Inequality in Malaysia
-
-This is an article about income inequality in Malaysia. It discusses the relationship between income inequality and economic growth, education level, and inflation rate. The Gini coefficient is used to measure income inequality. A high Gini coefficient indicates a high level of income inequality. Economic growth in wealthy countries can increase income inequality. However, income inequality in poor countries can impede economic progress.
-
-The conclusion of the article is that economic growth, education level, and inflation rate all have an impact on income inequality in Malaysia. However, the impact of these factors varies depending on the level of economic development. In Malaysia, economic growth has led to an increase in income inequality. However, increasing education levels and reducing inflation rates can help to reduce income inequality.
-
-[Source](https://hrmars.com/papers_submitted/18136/the-impact-of-economic-growth-education-level-and-inflation-rate-on-income-inequality-in-malaysia.pdf)
-
-## 4. Data
-
-We will leverage the following datasets from the Malaysian government’s open data platform:
-
--   **Income Inequality Data:** Household income inequality by district (<https://data.gov.my/data-catalogue/hh_inequality_district>)
-
--   **School Completion Rates Data:** School completion rates by state (<https://data.gov.my/data-catalogue/completion_school_state>)
-
--   **Crime Data:** Crime rates by district (<https://data.gov.my/data-catalogue/crime_district>)
-
-Data cleaning and preprocessing will involve handling missing values, merging datasets by geographic regions (district or state), and ensuring consistency in temporal coverage.
-
-## 5. Approach
-
-This project will use R Studio as the primary platform for data analysis and visualization.
-
-Our analysis will follow these key steps:
-
--   **Exploratory Spatial Data Analysis (ESDA):** Using tools like Moran’s I and Local Indicators of Spatial Association (LISA), we will identify clusters of income inequality and school completion rates to understand if they are randomly distributed or form spatial patterns.
-
--   **Geographically Weighted Regression (GWR):** To explore the relationship between income inequality and school completion rates, we will use GWR to assess how the strength of this relationship varies across regions. We will also include crime rates as a potential confounding variable to see how it interacts with our main variables of interest.
-
-## 6. Prototypes & Storyboards
-
-![](images/clipboard-3263130708.png)
-
-![](images/clipboard-3941781410.png)
+-   **Global and Local Spatial Autocorrelation**: Allows user to perform Global and Local Moran on the dataset, and plot maps to visualise it. Also allowing users to perform emerging hot spot analysis

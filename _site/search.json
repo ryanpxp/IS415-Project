@@ -1,52 +1,59 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "objectID": "proposal.html",
+    "href": "proposal.html",
+    "title": "Proposal",
     "section": "",
-    "text": "Intuitively, education plays a critical role in determining future economic opportunities and might be influenced by socio-economic conditions such as income inequality. However, school completion rates vary significantly across districts in Malaysia.\nThis project aims to explore the spatial relationship between income inequality, school completion rates and crime rates, with the goal of identifying districts where disparities are most pronounced. By using geospatial methods, we seek to uncover spatial patterns that can help policymakers target interventions more effectively."
+    "text": "Addressing regional crime disparities in Malaysia requires a deeper understanding of the social and economic factors that contribute to criminal activity. This project aims to investigate if socio-economic factors like unemployment and income inequality drive crime rates and whether they are any crime patterns across different areas. By uncovering these relationships through spatial analysis, we hope to provide insights that support targeted public safety initiatives and effective policy interventions to foster safer, more equitable communities."
   },
   {
-    "objectID": "index.html#motivation",
-    "href": "index.html#motivation",
-    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "objectID": "proposal.html#motivation",
+    "href": "proposal.html#motivation",
+    "title": "Proposal",
     "section": "",
-    "text": "Intuitively, education plays a critical role in determining future economic opportunities and might be influenced by socio-economic conditions such as income inequality. However, school completion rates vary significantly across districts in Malaysia.\nThis project aims to explore the spatial relationship between income inequality, school completion rates and crime rates, with the goal of identifying districts where disparities are most pronounced. By using geospatial methods, we seek to uncover spatial patterns that can help policymakers target interventions more effectively."
+    "text": "Addressing regional crime disparities in Malaysia requires a deeper understanding of the social and economic factors that contribute to criminal activity. This project aims to investigate if socio-economic factors like unemployment and income inequality drive crime rates and whether they are any crime patterns across different areas. By uncovering these relationships through spatial analysis, we hope to provide insights that support targeted public safety initiatives and effective policy interventions to foster safer, more equitable communities."
   },
   {
-    "objectID": "index.html#problem-statement",
-    "href": "index.html#problem-statement",
-    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "objectID": "proposal.html#problem-statement",
+    "href": "proposal.html#problem-statement",
+    "title": "Proposal",
     "section": "2. Problem Statement",
-    "text": "2. Problem Statement\nDespite Malaysia’s advancements in education, gaps in school completion rates persist across regions. One significant factor contributing to this is income inequality. Our project aims to answer the question: How does income inequality impact school completion rates across different regions of Malaysia? Additionally, we will investigate how other factors, such as regional crime rates, may interact with these variables to further affect educational outcomes."
+    "text": "2. Problem Statement\nCrime rates in Malaysia vary widely across regions and are often influenced by socioeconomic factors. This project explores whether there is a link between crime and factors such as unemployment rates or income inequality, examining how these may drive criminal activity in different areas. The findings aim to provide insights that can inform public safety and economic policies."
   },
   {
-    "objectID": "index.html#related-work",
-    "href": "index.html#related-work",
-    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "objectID": "proposal.html#related-work",
+    "href": "proposal.html#related-work",
+    "title": "Proposal",
     "section": "3. Related Work",
     "text": "3. Related Work\n\n3.1 Stimulating Economic Growth, Improving Quality of Life & Enhancing Youth Involvement, Proceedings of International Conference on Contemporary Economic Issues 2014, Kuala Lumpur: Malaysia.\nThis paper has shed some light on the relationship between poverty, education and income\ninequality. While overall poverty incidence is low, pockets of poverty remains particularly\namong those living in the rural areas and the Bumiputeras. The incidence of poverty declines\nwith the level of education attained by the head of households. This negative correlation\nbetween education and poverty is consistent with the prediction and this highlights the\nimportant role played by education, especially at tertiary level and higher in reducing poverty\nWhile level of poverty declines with education, income inequality increases with education.\nThere is an increase in average income from group to group with more and more members\nhaving higher education but their respective income inequalities are not as clear cut. In other\nwords, there exist significant differences in income inequality among sub-groups but with no\nclear pattern.\nSource\n\n\n3.2 The Impact of Economic Growth, Education Level, and Inflation Rate on Income Inequality in Malaysia\nThis is an article about income inequality in Malaysia. It discusses the relationship between income inequality and economic growth, education level, and inflation rate. The Gini coefficient is used to measure income inequality. A high Gini coefficient indicates a high level of income inequality. Economic growth in wealthy countries can increase income inequality. However, income inequality in poor countries can impede economic progress.\nThe conclusion of the article is that economic growth, education level, and inflation rate all have an impact on income inequality in Malaysia. However, the impact of these factors varies depending on the level of economic development. In Malaysia, economic growth has led to an increase in income inequality. However, increasing education levels and reducing inflation rates can help to reduce income inequality.\nSource"
   },
   {
-    "objectID": "index.html#data",
-    "href": "index.html#data",
-    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "objectID": "proposal.html#data",
+    "href": "proposal.html#data",
+    "title": "Proposal",
     "section": "4. Data",
     "text": "4. Data\nWe will leverage the following datasets from the Malaysian government’s open data platform:\n\nIncome Inequality Data: Household income inequality by district (https://data.gov.my/data-catalogue/hh_inequality_district)\nSchool Completion Rates Data: School completion rates by state (https://data.gov.my/data-catalogue/completion_school_state)\nCrime Data: Crime rates by district (https://data.gov.my/data-catalogue/crime_district)\n\nData cleaning and preprocessing will involve handling missing values, merging datasets by geographic regions (district or state), and ensuring consistency in temporal coverage."
   },
   {
-    "objectID": "index.html#approach",
-    "href": "index.html#approach",
-    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "objectID": "proposal.html#approach",
+    "href": "proposal.html#approach",
+    "title": "Proposal",
     "section": "5. Approach",
     "text": "5. Approach\nThis project will use R Studio as the primary platform for data analysis and visualization.\nOur analysis will follow these key steps:\n\nExploratory Spatial Data Analysis (ESDA): Using tools like Moran’s I and Local Indicators of Spatial Association (LISA), we will identify clusters of income inequality and school completion rates to understand if they are randomly distributed or form spatial patterns.\nGeographically Weighted Regression (GWR): To explore the relationship between income inequality and school completion rates, we will use GWR to assess how the strength of this relationship varies across regions. We will also include crime rates as a potential confounding variable to see how it interacts with our main variables of interest."
   },
   {
-    "objectID": "index.html#prototypes-storyboards",
-    "href": "index.html#prototypes-storyboards",
-    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "objectID": "proposal.html#prototypes-storyboards",
+    "href": "proposal.html#prototypes-storyboards",
+    "title": "Proposal",
     "section": "6. Prototypes & Storyboards",
     "text": "6. Prototypes & Storyboards"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia",
+    "section": "",
+    "text": "AbangSmith is a Shiny application that is designed to explore and analyse the spatial relationships between crime rates and socio-economic factors in Malaysia, such as unemployment rates and income inequality. Leveraging interactive visualisations and geospatial analysis, the application provides users with the tools to uncover regional crime disparities and patterns. By integrating data-driven insights with user-friendly functionality, the platform aims to support researchers, policymakers, and community stakeholders in understanding the drivers of criminal activity.\nThe application features a range of exploratory data analysis (EDA) tools, such as histograms, boxplots, and spatial maps, allowing users to visualise and analyse crime data alongside relevant socio-economic indicators. Through these capabilities, users can identify trends, patterns, and potential hotspots of criminal activity. The ultimate goal of this tool is to facilitate informed decision-making and empower targeted policy interventions to promote public safety and social equity across Malaysia.\nThe Shiny application comprises of three pages:\n\nExplanatory Data Analysis (EDA): Allows to generate histogram, box-plot, choropleth maps and LISA map consisting of socio-economic factors.\nGeographically Weighted Regression:\nGlobal and Local Spatial Autocorrelation: Allows user to perform Global and Local Moran on the dataset, and plot maps to visualise it. Also allowing users to perform emerging hot spot analysis"
   },
   {
     "objectID": "DataWrangling.html",
@@ -96,13 +103,6 @@
     "title": "Data Wrangling",
     "section": "GWR",
     "text": "GWR\nThe GWR dataset requires a different format then the other datasets.\n\nLeft Join\n\nmsia_gwr &lt;- crime_labour_iq_household_poverty %&gt;%\n  left_join(msia_sf, by = c(\"district\" = \"ADM2_EN\"))%&gt;%\n        dplyr::select(1:12,24:26)\n\n\n\nCombining Crime Type\n\nmsia_gwr &lt;- msia_gwr %&gt;%\n  mutate(cat_type = paste(category, type, sep = \"-\")) %&gt;%\n  dplyr::select(-category, -type) %&gt;%\n  pivot_wider(\n    names_from = cat_type,\n    values_from = crimes,\n    values_fill = 0.0,\n    values_fn = mean  # Calculate the mean of duplicate values\n  )\n\n\nmsia_gwr &lt;- msia_gwr %&gt;%\n  mutate(\n    robbery = `assault-robbery_gang_armed` + `assault-robbery_gang_unarmed` + \n              `assault-robbery_solo_armed` + `assault-robbery_solo_unarmed`,\n    vehicle_theft = `property-theft_vehicle_lorry` + `property-theft_vehicle_motorcar` + \n                    `property-theft_vehicle_motorcycle`\n  ) %&gt;%\n  dplyr::select(-`assault-robbery_gang_armed`, -`assault-robbery_gang_unarmed`, \n         -`assault-robbery_solo_armed`, -`assault-robbery_solo_unarmed`,\n         -`property-theft_vehicle_lorry`, -`property-theft_vehicle_motorcar`, \n         -`property-theft_vehicle_motorcycle`) %&gt;%\n  rename_with(~str_remove(., \"^assault-|^property-\"))"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
   },
   {
     "objectID": "guide.html",

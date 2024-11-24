@@ -7,13 +7,15 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - href: proposal.qmd
+        text: Proposal
       - href: DataWrangling.qmd
         text: Data Wrangling
       - href: poster.qmd
         text: Poster
       - href: guide.qmd
         text: User Guide
-      - href: https://is415-kwee-cheng.shinyapps.io/G1T9-AbangSmith/
+      - href: https://is415-kwee-cheng.shinyapps.io/AbangSmith/
         text: Shiny Application
 
 

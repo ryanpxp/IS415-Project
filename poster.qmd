@@ -1,5 +1,6 @@
 ---
 title: "Poster"
+author: "Team: Abang Smith"
 ---
 
-![](images/G1T9 poster.png)
+![](images/G1T9%20poster.png)
