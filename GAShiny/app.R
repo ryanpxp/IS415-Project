@@ -29,6 +29,7 @@ ui <-
                                 sidebarLayout(
                                   sidebarPanel(
                                     titlePanel("EDA"),
+                                    p("Click on", strong("Plot"), "to generate the output"),
                                     selectInput(inputId = "EDAVariable", "Select variable for EDA",
                                                 choices = NULL),
                                     radioButtons(inputId = "EDAyear",
@@ -43,13 +44,16 @@ ui <-
                                   mainPanel(
                                     fluidRow(
                                       column(6,
-                                             plotOutput("edaHistogram") %>% withSpinner(color = "#3498db")
+                                             plotOutput("edaHistogram") %>% withSpinner(color = "#3498db"),
+                                             p("This histogram helps to show the distribution of the EDA variable")
                                       ),
                                       column(6,
-                                             plotOutput("edaBoxplot") %>% withSpinner(color = "#3498db")
+                                             plotOutput("edaBoxplot") %>% withSpinner(color = "#3498db"),
+                                             p("This boxplot helps to find any outliers in the EDA variable")
                                       )
                                     ),
-                                        plotOutput("qtmPlot") %>% withSpinner(color = "#3498db")
+                                        plotOutput("qtmPlot") %>% withSpinner(color = "#3498db"),
+                                        p("This map shows the distribution of the EDA variable on the Malaysia map")
                                   )
                                 )
                               ),
