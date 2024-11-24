@@ -628,7 +628,7 @@ server <- function(input, output, session){
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
     histogram <- {
-      ggplot(data = df, aes_string(x = input$EDAVariable)) +
+      ggplot(data = df, aes(x = .data[[input$EDAVariable]])) +
         geom_histogram(bins = 20, color = "black", fill = "light blue")
     }
     histogram
@@ -640,7 +640,7 @@ server <- function(input, output, session){
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
     boxplot <- {
-      ggplot(data = df, aes_string(x = input$EDAVariable)) +
+      ggplot(data = df, aes(x = .data[[input$EDAVariable]])) +
         geom_boxplot(color = "black", fill = "light blue")
     }
     boxplot
