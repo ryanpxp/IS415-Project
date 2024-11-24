@@ -1,8 +1,6 @@
-library(Kendall)
-library(rmapshaper)
-pacman::p_load(shiny, shinyjs, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
+pacman::p_load(shiny, shinyjs, sf, tmap,rmapshaper,Kendall, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
              st, tidyverse, raster, tmaptools, ggplot2, spatstat,knitr,performance, see, GWmodel,olsrr, ggstatsplot)
-msia <- read_rds("data/rds/test.rds")
+msia <- read_rds("data/rds/msia.rds")
 msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp", 
                    layer = "mys_admbnda_adm2_unhcr_20210211") %>%
   st_as_sf(coords =c(
