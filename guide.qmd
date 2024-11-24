@@ -36,7 +36,7 @@ Users are able to select the socio-economic factors that they would like for LIS
 
 This tab allows users to visualise the correlation between independent variables.
 
-![](images/clipboard-3410578648.png)
+![](images/image_2024-11-24_17-19-45.png)
 
 Users are able to select the socio-economic factors (independent variables) that they would want to compare and the type of crime classification. These socio-economic factors are only available for the years **2019** & **2022**. Users are also able to select the significant level for the correlation matrix.
 
@@ -44,21 +44,35 @@ Users are able to select the socio-economic factors (independent variables) that
 
 This tab assists user to in their decision whether to select stepwise regression models or base model by showing its performance.
 
-![](images/clipboard-2130314413.png)
+![](images/image_2024-11-24_17-20-13.png)
 
-Users are able to select the socio-economic factors (independent variables) that they would want to compare and the type of crime classification. These socio-economic factors are only available for the years **2019** & **2022**. Users are also able to select the significant level for the correlation matrix.
+Users are able to select the socio-economic factors (independent variables) that they would want to compare and the type of crime classification. These socio-economic factors are only available for the years **2019** & **2022**. Users are also able to p value for the stepwise regression models.
 
 #### Check
 
 This tab assists user to conclude if the assumption checks for geographically weighted regression are met. They are presented with plots/graphs of linearity (top-left), normality check (top-right), outliers (bottom-left), and collinearity (bottom-right).
 
-![](images/clipboard-4202787560.png)
+![](images/image_2024-11-24_17-20-56.png)
 
 ### GWR Model
 
 #### Map
 
+![](images/image_2024-11-24_15-58-42.png)
+
+![](images/image_2024-11-24_16-01-29.png)
+
+This tab allows user to compare the local R-squared with that socio-economic factor of their choosing, based on the type of crime and year. Only the years **2019** & **2022 are available** as missing data will influence GWR.
+
+Users are able to customise the computation function, approach, distancec metric and stepwise regression model.
+
+After plotting the initial map, user are then able to customise what variables they want to compare with the local R-squared (top map) on the second map (bottom map).
+
 #### Stats
+
+![](images/image_2024-11-24_16-00-26.png)
+
+This tab allows user to view the coefficent estimates and the statistics of the regression model given the parameters selected (identical to the *Map* tab).
 
 ## Spatial Autocorrelation
 
