@@ -3,6 +3,12 @@ title: "Geospatial Analysis of Crimes in Malaysia Against Socio-economic Factors
 author: "Team: Abang Smith"
 ---
 
+<center>
+
+![Resident Abang Smith](images/jaden-smith.gif){width="687"}
+
+</center>
+
 ![](images/clipboard-2312124942.png)
 
 **`AbangSmith`** is a Shiny application that is designed to explore and analyse the spatial relationships between crime rates and socio-economic factors in Malaysia, such as unemployment rates and income inequality. Leveraging interactive visualisations and geospatial analysis, the application provides users with the tools to uncover regional crime disparities and patterns. By integrating data-driven insights with user-friendly functionality, the platform aims to support researchers, policymakers, and community stakeholders in understanding the drivers of criminal activity.
