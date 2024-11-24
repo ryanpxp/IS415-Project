@@ -422,10 +422,10 @@ server <- function(input, output, session){
                                "Poverty Absolute" = "poverty_absolute",
                                "Poverty Relative" = "poverty_relative",
                                "Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate")
+                               "Unemployment rate" = "unemployment_rate")
     } else {
       unique_relationship <- c("Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate")
+                               "Unemployment rate" = "unemployment_rate")
     }
     unique_relationship
     
@@ -441,7 +441,7 @@ server <- function(input, output, session){
                                "Poverty Absolute" = "poverty_absolute",
                                "Poverty Relative" = "poverty_relative",
                                "Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate",
+                               "Unemployment rate" = "unemployment_rate",
                                "Causing Injury" = "causing_injury",
                                "Murder" = "murder",
                                "Rape" = "rape",
@@ -451,7 +451,7 @@ server <- function(input, output, session){
                                "Vehicle Theft" = "vehicle_theft")
     } else {
       unique_relationship <- c("Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate",
+                               "Unemployment rate" = "unemployment_rate",
                                "Causing Injury" = "causing_injury",
                                "Murder" = "murder",
                                "Rape" = "rape",
@@ -481,9 +481,9 @@ server <- function(input, output, session){
                                "Income Median" = "income_median",
                                "Poverty Absolute" = "poverty_absolute",
                                "Poverty Relative" = "poverty_relative",
-                               "Unemployment rate" = "u_rate")
+                               "Unemployment rate" = "unemployment_rate")
     } else {
-      unique_relationship <- c("Unemployment rate" = "u_rate")
+      unique_relationship <- c("Unemployment rate" = "unemployment_rate")
     }
     unique_relationship
     
