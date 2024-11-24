@@ -267,7 +267,7 @@ poverty <- rename_districts(poverty)
 
 ### Recalculation
 
-After renaming, we would have duplicate rows of the same district and year. We have to total up these 
+After renaming, we would have duplicate rows of the same district and year. We have to total up these
 
 ```{r}
 #| eval: false
@@ -330,65 +330,34 @@ poverty <- poverty %>%
 crime_labour <- crime %>%
         filter(year >= 2019 & year <= 2022) %>%
         left_join(labour, by = c("district","year")) %>%
-        select(2:6,9,10)
-crime_labour <- na.omit(crime_labour)
+        select(state.x, district, category, type, year,crimes, lf, unemployment_rate,p_rate)
 ```
 
 #### Crime_labour with income inquality
-
-Remove any duplicates first
-
-```{r}
-#| eval: false
-#crime_labour <- crime_labour %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
-
-
-```
 
 ```{r}
 #| eval: false
 crime_labour_iq <- crime_labour %>%
         left_join(income, by = c("district","year")) %>%
-        select(1:7,9)
+        select(state.x, district, category, type, year,crimes, lf, unemployment_rate,p_rate,gini)
 ```
 
 #### Crime_labour_iq with household income
-
-Remove any duplicates first
-
-```{r}
-#| eval: false
-#crime_labour_iq <- crime_labour_iq %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
-```
 
 ```{r}
 #| eval: false
 crime_labour_iq_household <- crime_labour_iq %>%
         left_join(household, by = c("district","year")) %>%
-        select(1:8,10,11)
+        select(state.x, district, category, type, year,crimes, lf, unemployment_rate,p_rate,gini,income_mean,income_median)
 ```
 
 #### Crime_labour_iq with household poverty
-
-Remove any duplicates first
-
-```{r}
-#| eval: false
-#crime_labour_iq_household <- crime_labour_iq_household %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
-```
 
 ```{r}
 #| eval: false
 crime_labour_iq_household_poverty <- crime_labour_iq_household %>%
         left_join(poverty, by = c("district","year")) %>%
-        select(1:10,12,13)
-```
-
-Remove duplicates for the final one
-
-```{r}
-#| eval: false
-#crime_labour_iq_household_poverty <- crime_labour_iq_household_poverty %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+        select(state.x, district, category, type, year,crimes, lf, unemployment_rate,p_rate,gini,income_mean,income_median,poverty_relative,poverty_absolute)
 ```
 
 #### Left Join with Malaysia sf
@@ -396,9 +365,8 @@ Remove duplicates for the final one
 ```{r}
 #| eval: false
 msia <- left_join(msia_sf,crime_labour_iq_household_poverty, by = c("ADM2_EN" = "district")) %>%
-        select(1,13:26)
+        select(state.x, ADM2_EN, category, type, year,crimes, lf, unemployment_rate,p_rate,gini,income_mean,income_median,poverty_relative,poverty_absolute)
 ```
-
 
 ## Combining Crime Type
 
@@ -416,7 +384,6 @@ msia <- msia %>%
     values_fn = mean  # Calculate the mean of duplicate values
   )
 ```
-
 
 ```{r}
 #| eval: false
@@ -437,8 +404,6 @@ msia <- msia %>%
   select(-"NA-NA")
 ```
 
-
-
 Remove NA values for the year
 
 ```{r}
@@ -449,7 +414,7 @@ msia <- msia[!is.na(msia$year), ]
 ```{r}
 #| eval: false
 #| echo: false
-write_rds(msia, "data/rds/test.rds")
+write_rds(msia, "data/rds/msia.rds")
 ```
 
 ## GWR
