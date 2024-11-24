@@ -38,11 +38,15 @@ This tab allows users to visualise the correlation between independent variables
 
 ![](images/clipboard-3410578648.png)
 
+Users are able to select the socio-economic factors (independent variables) that they would want to compare and the type of crime classification. These socio-economic factors are only available for the years **2019** & **2022**. Users are also able to select the significant level for the correlation matrix.
+
 #### Model Performance
 
-This tab assists user to select the type of stepwise regression model or base model by showing its performance.
+This tab assists user to in their decision whether to select stepwise regression models or base model by showing its performance.
 
 ![](images/clipboard-2130314413.png)
+
+Users are able to select the socio-economic factors (independent variables) that they would want to compare and the type of crime classification. These socio-economic factors are only available for the years **2019** & **2022**. Users are also able to select the significant level for the correlation matrix.
 
 #### Check
 
