@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.4.555">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Data Wrangling – IS415-Project</title>
+<title>IS415-Project - Data Wrangling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -117,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -144,7 +144,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -163,12 +163,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">Importing the data</a></li>
   <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">Data Wrangling</a>
   <ul class="collapse">
-  <li><a href="#renaming-allall-rows" id="toc-renaming-allall-rows" class="nav-link" data-scroll-target="#renaming-allall-rows">Renaming “all”/“All” rows</a></li>
+  <li><a href="#removing-allall-rows" id="toc-removing-allall-rows" class="nav-link" data-scroll-target="#removing-allall-rows">Removing “all”/“All” rows</a></li>
   <li><a href="#adding-year-column" id="toc-adding-year-column" class="nav-link" data-scroll-target="#adding-year-column">Adding year column</a></li>
   <li><a href="#renaming-mismatch-districts" id="toc-renaming-mismatch-districts" class="nav-link" data-scroll-target="#renaming-mismatch-districts">Renaming mismatch districts</a></li>
+  <li><a href="#recalculation" id="toc-recalculation" class="nav-link" data-scroll-target="#recalculation">Recalculation</a></li>
   <li><a href="#left-join" id="toc-left-join" class="nav-link" data-scroll-target="#left-join">Left Join</a></li>
   </ul></li>
   <li><a href="#combining-crime-type" id="toc-combining-crime-type" class="nav-link" data-scroll-target="#combining-crime-type">Combining Crime Type</a></li>
+  <li><a href="#gwr" id="toc-gwr" class="nav-link" data-scroll-target="#gwr">GWR</a>
+  <ul class="collapse">
+  <li><a href="#left-join-1" id="toc-left-join-1" class="nav-link" data-scroll-target="#left-join-1">Left Join</a></li>
+  <li><a href="#combining-crime-type-1" id="toc-combining-crime-type-1" class="nav-link" data-scroll-target="#combining-crime-type-1">Combining Crime Type</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -230,8 +236,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="data-wrangling" class="level2">
 <h2 class="anchored" data-anchor-id="data-wrangling">Data Wrangling</h2>
-<section id="renaming-allall-rows" class="level3">
-<h3 class="anchored" data-anchor-id="renaming-allall-rows">Renaming “all”/“All” rows</h3>
+<section id="removing-allall-rows" class="level3">
+<h3 class="anchored" data-anchor-id="removing-allall-rows">Removing “all”/“All” rows</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>excluded_column <span class="ot">&lt;-</span> <span class="st">"date"</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>crime <span class="ot">&lt;-</span> crime[<span class="sc">!</span><span class="fu">apply</span>(crime[, <span class="sc">!</span><span class="fu">names</span>(crime) <span class="sc">%in%</span> excluded_column] <span class="sc">==</span> <span class="st">"all"</span>, <span class="dv">1</span>, any), ]</span>
@@ -445,63 +451,108 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
+<section id="recalculation" class="level3">
+<h3 class="anchored" data-anchor-id="recalculation">Recalculation</h3>
+<p>After renaming, we would have duplicate rows of the same district and year. We have to total up these</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>crime <span class="ot">&lt;-</span> crime <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state, district, category, type, year) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">crimes =</span> <span class="fu">sum</span>(crimes), <span class="at">.groups =</span> <span class="st">'drop'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>labour <span class="ot">&lt;-</span> labour <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state, district, year) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">lf =</span> <span class="fu">sum</span>(lf, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),  <span class="co"># Total labor force</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_rate =</span> <span class="fu">mean</span>(p_rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),  <span class="co"># Average participation rate</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">unemployment_rate =</span> <span class="fu">weighted.mean</span>(u_rate, lf, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),  <span class="co"># Weighted unemployment rate</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>income <span class="ot">&lt;-</span> income <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state, district, year) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">gini =</span> <span class="fu">sum</span>(gini),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>household <span class="ot">&lt;-</span> household <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state, district, year) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">income_mean =</span> <span class="fu">sum</span>(income_mean),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">income_median =</span> <span class="fu">sum</span>(income_median),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>poverty <span class="ot">&lt;-</span> poverty <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state, district, year) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">poverty_relative =</span> <span class="fu">sum</span>(poverty_relative),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">poverty_absolute =</span> <span class="fu">sum</span>(poverty_absolute),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section id="left-join" class="level3">
 <h3 class="anchored" data-anchor-id="left-join">Left Join</h3>
 <section id="crime-and-labour-data" class="level4">
 <h4 class="anchored" data-anchor-id="crime-and-labour-data">Crime and Labour data</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>crime_labour <span class="ot">&lt;-</span> crime <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2019</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2022</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(labour, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">10</span>,<span class="dv">12</span>,<span class="dv">14</span>,<span class="dv">15</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>crime_labour <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(crime_labour)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>crime_labour <span class="ot">&lt;-</span> crime <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2019</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2022</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(labour, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>,<span class="dv">9</span>,<span class="dv">10</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>crime_labour <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(crime_labour)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="crime_labour-with-income-inquality" class="level4">
 <h4 class="anchored" data-anchor-id="crime_labour-with-income-inquality">Crime_labour with income inquality</h4>
 <p>Remove any duplicates first</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>crime_labour <span class="ot">&lt;-</span> crime_labour <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(district, category,type,crimes,year,date.x, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#crime_labour &lt;- crime_labour %&gt;% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq <span class="ot">&lt;-</span> crime_labour <span class="sc">%&gt;%</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(income, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">10</span>,<span class="dv">11</span>,<span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq <span class="ot">&lt;-</span> crime_labour <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(income, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="crime_labour_iq-with-household-income" class="level4">
 <h4 class="anchored" data-anchor-id="crime_labour_iq-with-household-income">Crime_labour_iq with household income</h4>
 <p>Remove any duplicates first</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq <span class="ot">&lt;-</span> crime_labour_iq <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(district, category,type,crimes,year,date.x, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#crime_labour_iq &lt;- crime_labour_iq %&gt;% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household <span class="ot">&lt;-</span> crime_labour_iq <span class="sc">%&gt;%</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(household, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household <span class="ot">&lt;-</span> crime_labour_iq <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(household, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>,<span class="dv">10</span>,<span class="dv">11</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="crime_labour_iq-with-household-poverty" class="level4">
 <h4 class="anchored" data-anchor-id="crime_labour_iq-with-household-poverty">Crime_labour_iq with household poverty</h4>
 <p>Remove any duplicates first</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household <span class="ot">&lt;-</span> crime_labour_iq_household <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(district, category,type,crimes,year,date.x, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#crime_labour_iq_household &lt;- crime_labour_iq_household %&gt;% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household_poverty <span class="ot">&lt;-</span> crime_labour_iq_household <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(poverty, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,<span class="dv">15</span>,<span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household_poverty <span class="ot">&lt;-</span> crime_labour_iq_household <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">left_join</span>(poverty, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span>,<span class="st">"year"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">12</span>,<span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Remove duplicates for the final one</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>crime_labour_iq_household_poverty <span class="ot">&lt;-</span> crime_labour_iq_household_poverty <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(district, category,type,crimes,year,date.x, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#crime_labour_iq_household_poverty &lt;- crime_labour_iq_household_poverty %&gt;% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="left-join-with-malaysia-sf" class="level4">
 <h4 class="anchored" data-anchor-id="left-join-with-malaysia-sf">Left Join with Malaysia sf</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> <span class="fu">left_join</span>(msia_sf,crime_labour_iq_household_poverty, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ADM2_EN"</span> <span class="ot">=</span> <span class="st">"district"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">6</span>,<span class="dv">16</span><span class="sc">:</span><span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> <span class="fu">left_join</span>(msia_sf,crime_labour_iq_household_poverty, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ADM2_EN"</span> <span class="ot">=</span> <span class="st">"district"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="dv">1</span>,<span class="dv">13</span><span class="sc">:</span><span class="dv">26</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -510,39 +561,79 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="combining-crime-type">Combining Crime Type</h2>
 <p>From the initial prototype of the Shiny application, it was seen that for assault category, there was multiple types of robbery like robbery_gang_armed,robbery_gang_unarmed,robbery_solo_armed and robbery_solo_unarmed. This is the same for the property type with multiple types of vehicle theft like theft_vehicle_lorry,theft_vehicle_motorcar and theft_vehicle_motorcycle. This was causing the large file size as there are multiple rows, so we decided to combine it into a generic type <em>robbery</em> and <em>vehicle_theft</em>.As for the user it would not matter to them on the different types of robbery type or vehicle theft type</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cat_type =</span> <span class="fu">paste</span>(category, type, <span class="at">sep =</span> <span class="st">"-"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>category, <span class="sc">-</span>type) <span class="sc">%&gt;%</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> cat_type,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> crimes,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="fl">0.0</span>,</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fn =</span> mean  <span class="co"># Calculate the mean of duplicate values</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cat_type =</span> <span class="fu">paste</span>(category, type, <span class="at">sep =</span> <span class="st">"-"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>category, <span class="sc">-</span>type) <span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> cat_type,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> crimes,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="fl">0.0</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fn =</span> mean  <span class="co"># Calculate the mean of duplicate values</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">robbery =</span> <span class="st">`</span><span class="at">assault-robbery_gang_armed</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">assault-robbery_gang_unarmed</span><span class="st">`</span> <span class="sc">+</span> </span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">`</span><span class="at">assault-robbery_solo_armed</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">assault-robbery_solo_unarmed</span><span class="st">`</span>,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">vehicle_theft =</span> <span class="st">`</span><span class="at">property-theft_vehicle_lorry</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">property-theft_vehicle_motorcar</span><span class="st">`</span> <span class="sc">+</span> </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                    <span class="st">`</span><span class="at">property-theft_vehicle_motorcycle</span><span class="st">`</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_gang_armed</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_gang_unarmed</span><span class="st">`</span>, </span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_solo_armed</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_solo_unarmed</span><span class="st">`</span>,</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_lorry</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_motorcar</span><span class="st">`</span>, </span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_motorcycle</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span><span class="fu">str_remove</span>(., <span class="st">"^assault-|^property-"</span>))</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">"NA-NA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">robbery =</span> <span class="st">`</span><span class="at">assault-robbery_gang_armed</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">assault-robbery_gang_unarmed</span><span class="st">`</span> <span class="sc">+</span> </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">`</span><span class="at">assault-robbery_solo_armed</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">assault-robbery_solo_unarmed</span><span class="st">`</span>,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">vehicle_theft =</span> <span class="st">`</span><span class="at">property-theft_vehicle_lorry</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">property-theft_vehicle_motorcar</span><span class="st">`</span> <span class="sc">+</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                    <span class="st">`</span><span class="at">property-theft_vehicle_motorcycle</span><span class="st">`</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_gang_armed</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_gang_unarmed</span><span class="st">`</span>, </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_solo_armed</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_solo_unarmed</span><span class="st">`</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_lorry</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_motorcar</span><span class="st">`</span>, </span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_motorcycle</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span><span class="fu">str_remove</span>(., <span class="st">"^assault-|^property-"</span>))</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia <span class="sc">%&gt;%</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">"NA-NA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Remove NA values for the year</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia[<span class="sc">!</span><span class="fu">is.na</span>(msia<span class="sc">$</span>year), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>msia <span class="ot">&lt;-</span> msia[<span class="sc">!</span><span class="fu">is.na</span>(msia<span class="sc">$</span>year), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="gwr" class="level2">
+<h2 class="anchored" data-anchor-id="gwr">GWR</h2>
+<p>The GWR dataset requires a different format then the other datasets.</p>
+<section id="left-join-1" class="level3">
+<h3 class="anchored" data-anchor-id="left-join-1">Left Join</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>msia_gwr <span class="ot">&lt;-</span> crime_labour_iq_household_poverty <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(msia_sf, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"district"</span> <span class="ot">=</span> <span class="st">"ADM2_EN"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,<span class="dv">24</span><span class="sc">:</span><span class="dv">26</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="combining-crime-type-1" class="level3">
+<h3 class="anchored" data-anchor-id="combining-crime-type-1">Combining Crime Type</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>msia_gwr <span class="ot">&lt;-</span> msia_gwr <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cat_type =</span> <span class="fu">paste</span>(category, type, <span class="at">sep =</span> <span class="st">"-"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>category, <span class="sc">-</span>type) <span class="sc">%&gt;%</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> cat_type,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> crimes,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="fl">0.0</span>,</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fn =</span> mean  <span class="co"># Calculate the mean of duplicate values</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>msia_gwr <span class="ot">&lt;-</span> msia_gwr <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">robbery =</span> <span class="st">`</span><span class="at">assault-robbery_gang_armed</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">assault-robbery_gang_unarmed</span><span class="st">`</span> <span class="sc">+</span> </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">`</span><span class="at">assault-robbery_solo_armed</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">assault-robbery_solo_unarmed</span><span class="st">`</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">vehicle_theft =</span> <span class="st">`</span><span class="at">property-theft_vehicle_lorry</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">property-theft_vehicle_motorcar</span><span class="st">`</span> <span class="sc">+</span> </span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                    <span class="st">`</span><span class="at">property-theft_vehicle_motorcycle</span><span class="st">`</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_gang_armed</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_gang_unarmed</span><span class="st">`</span>, </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_solo_armed</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">assault-robbery_solo_unarmed</span><span class="st">`</span>,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_lorry</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_motorcar</span><span class="st">`</span>, </span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">property-theft_vehicle_motorcycle</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span><span class="fu">str_remove</span>(., <span class="st">"^assault-|^property-"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -581,7 +672,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -613,29 +715,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -643,7 +723,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
