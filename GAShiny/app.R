@@ -11,7 +11,8 @@ msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp",
   st_transform(crs = 3168)
 set.seed(2321)
 
-combined_data <- read_rds("data/rds/combined_data1.rds")
+combined_data <- read_rds("data/rds/gwr.rds")
+combined_data <- combined_data %>% filter(year %in% c(2019,2022))
 
 #========================#
 ###### Shiny UI ######
@@ -90,17 +91,25 @@ ui <-
                                     selectInput("IndependentVar", "Select Independent Variable (Backspace to remove selection)",
                                                 choices = c("Poverty relative" = "poverty_relative",
                                                             "Poverty absolute" = "poverty_absolute",
-                                                            "Income inequality" = "inequality",
+                                                            "Gini Coefficient (Income inequality)" = "gini",
                                                             "Mean household income" = "income_mean",
                                                             "Median household income" = "income_median",
                                                             "Unemployment rate" = "unemployment_rate"),
-                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median", "unemployment_rate"),
+                                                selected = c("poverty_relative", "poverty_absolute", "gini", "income_mean", "income_median", "unemployment_rate"),
                                                 multiple = TRUE),
-                                    fluidRow(column(7,
+                                    fluidRow(column(8,
                                                     
-                                                    selectInput(inputId = "typeVariable3",
-                                                                label = "Select Crime Type",
-                                                                choices = NULL,
+                                                    selectInput(inputId = "crimeType",
+                                                                label = "Select Crime Type (Backspace to remove selection)",
+                                                                choices = c("Causing Injury" = "causing_injury",
+                                                                            "Murder" = "murder",
+                                                                            "Rape" = "rape",
+                                                                            "Break In" = "break_in",
+                                                                            "Other Theft" = "theft_other",
+                                                                            "Robbery" = "robbery",
+                                                                            "Vehicle Theft" = "vehicle_theft"
+                                                                ),
+                                                                selected = c("causing_injury", "murder"),
                                                                 multiple = TRUE),
                                     ),
                                     column(3, offset = 1,
@@ -161,17 +170,24 @@ ui <-
                                     selectInput("IndependentVar2", "Select Independent Variable (Backspace to remove selection)",
                                                 choices = c("Poverty relative" = "poverty_relative",
                                                             "Poverty absolute" = "poverty_absolute",
-                                                            "Income inequality" = "inequality",
+                                                            "Gini Coefficient (Income inequality)" = "gini",
                                                             "Mean household income" = "income_mean",
                                                             "Median household income" = "income_median",
                                                             "Unemployment rate" = "unemployment_rate"),
-                                                selected = c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median","unemployment_rate"),
+                                                selected = c("poverty_relative", "poverty_absolute", "gini", "income_mean", "income_median","unemployment_rate"),
                                                 multiple = TRUE),
-                                    fluidRow(column(7,
-                                                    # TODO: error for non input
-                                                    selectInput(inputId = "typeVariable4",
-                                                                label = "Select Crime Type",
-                                                                choices = NULL,
+                                    fluidRow(column(8,
+                                                    selectInput(inputId = "crimeType2",
+                                                                label = "Select Crime Type (Backspace to remove selection)",
+                                                                choices = c("Causing Injury" = "causing_injury",
+                                                                            "Murder" = "murder",
+                                                                            "Rape" = "rape",
+                                                                            "Break In" = "break_in",
+                                                                            "Other Theft" = "theft_other",
+                                                                            "Robbery" = "robbery",
+                                                                            "Vehicle Theft" = "vehicle_theft"
+                                                                ),
+                                                                selected = c("causing_injury", "murder"),
                                                                 multiple = TRUE),
                                     ),
                                     column(3, offset = 1,
@@ -483,8 +499,8 @@ server <- function(input, output, session){
   #Load typeVariable2 based on categoryVariable2
   #Load choices for type
   
-  updateSelectInput(session, "typeVariable3", choices = unique(combined_data$type))
-  updateSelectInput(session, "typeVariable4", choices = unique(combined_data$type))
+  #updateSelectInput(session, "typeVariable3", choices = unique(combined_data$type))
+  #updateSelectInput(session, "typeVariable4", choices = unique(combined_data$type))
   
   #==========================================================
   # EDA
@@ -804,13 +820,16 @@ server <- function(input, output, session){
     if(nrow(combined_data) == 0) return(NULL)  # Exit if no data
     
     # Check if any crime type is selected
-    if (length(input$typeVariable3) == 0) {
+    if (length(input$crimeType) == 0) {
       shinyjs::alert("Please select at least one crime type.")  # Show an alert
       return(NULL)  # Exit if no crime type selected
     }
     
-    combined_data_filtered <- combined_data %>% filter(
-      type %in% input$typeVariable3, year %in% input$GWRyear)
+    combined_data_filtered <- combined_data %>% 
+      filter(year %in% input$GWRyear)%>%
+      mutate(
+        crimes = rowSums(across(all_of(input$crimeType)), na.rm = TRUE)
+      )
     
     return (combined_data_filtered)
       
@@ -821,10 +840,10 @@ server <- function(input, output, session){
     
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
-    variable_names <- c("poverty_relative", "poverty_absolute", "inequality", "income_mean", "income_median", "unemployment_rate")
+    variable_names <- c("poverty_relative", "poverty_absolute", "gini", "income_mean", "income_median", "unemployment_rate")
     
     # Get the column indices dynamically based on the selected variables
-    selected_columns <- c(6, match(input$IndependentVar, variable_names) + 6)
+    selected_columns <- c(20, match(input$IndependentVar, variable_names) + 3)
     
     ggcorrmat(df[, selected_columns], sig.level = input$SigLvl)
   })
@@ -1026,8 +1045,11 @@ server <- function(input, output, session){
     
     if(nrow(combined_data) == 0) return(NULL)  # Exit if no data
     
-    combined_data_filtered2 <- combined_data %>% filter(
-      type %in% input$typeVariable4, year %in% input$GWRyear2)
+    combined_data_filtered2 <- combined_data %>% 
+      filter(year %in% input$GWRyear2)%>%
+      mutate(
+        crimes = rowSums(across(all_of(input$crimeType2)), na.rm = TRUE)
+      )
     
     predictors <- input$IndependentVar2
     
@@ -1059,9 +1081,9 @@ server <- function(input, output, session){
     combined_data_filtered2_st <- combined_data_filtered2_st %>%
       filter(
         !is.na(crimes) & !is.na(poverty_relative) & !is.na(poverty_absolute) &
-          !is.na(inequality) & !is.na(income_mean) & !is.na(income_median) & !is.na(unemployment_rate) &
+          !is.na(gini) & !is.na(income_mean) & !is.na(income_median) & !is.na(unemployment_rate) &
           is.finite(crimes) & is.finite(poverty_relative) & is.finite(poverty_absolute) &
-          is.finite(inequality) & is.finite(income_mean) & is.finite(income_median) & is.finite(unemployment_rate)
+          is.finite(gini) & is.finite(income_mean) & is.finite(income_median) & is.finite(unemployment_rate)
       )
     formula_str <- paste("crimes ~", paste(predictors, collapse = " + "))
     regression_formula <- as.formula(formula_str)
@@ -1111,7 +1133,7 @@ server <- function(input, output, session){
     
     
     tmap_mode("view")
-    Local_R2 <- tm_shape(df) +
+    Local_R2 <- tm_shape(df,simplify = 0.01,raster.downsample = TRUE) +
       tm_polygons(col = "Local_R2", alpha = 0.6) +
       tm_view(set.zoom.limits = c(5, 9))
   })
@@ -1126,7 +1148,7 @@ server <- function(input, output, session){
     selected_col <- input$GWRColumn
     
     tmap_mode("view")
-    Inequality_TV <- tm_shape(df) +
+    Inequality_TV <- tm_shape(df,simplify = 0.01,raster.downsample = TRUE) +
       tm_polygons(col = selected_col, alpha = 0.6) +
       tm_view(set.zoom.limits = c(5, 9))
   })
@@ -1141,8 +1163,12 @@ server <- function(input, output, session){
   
   output$Coefficient <- renderPlot({
     
-    combined_data_filtered2 <- combined_data %>% filter(
-      type %in% input$typeVariable4, year %in% input$GWRyear2)
+    combined_data_filtered2 <- combined_data %>% 
+      filter(year %in% input$GWRyear2)%>%
+      mutate(
+        crimes = rowSums(across(all_of(input$crimeType2)), na.rm = TRUE)
+      )
+    
     
     if(nrow(combined_data_filtered2) == 0) return(NULL)  
     predictors <- input$IndependentVar2

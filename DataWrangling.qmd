@@ -282,8 +282,8 @@ labour <- labour %>%
   group_by(state, district, year) %>% 
   summarize(
     lf = sum(lf, na.rm = TRUE),  # Total labor force
-    unemployment_rate = weighted.mean(u_rate, lf, na.rm = TRUE),  # Weighted unemployment rate
     p_rate = mean(p_rate, na.rm = TRUE),  # Average participation rate
+    unemployment_rate = weighted.mean(u_rate, lf, na.rm = TRUE),  # Weighted unemployment rate
     .groups = 'drop'
   )
 
@@ -329,8 +329,8 @@ poverty <- poverty %>%
 #| eval: false
 crime_labour <- crime %>%
         filter(year >= 2019 & year <= 2022) %>%
-        left_join(labour, by = c("district","year")) #%>%
-        #select(1:7,10,12,14,15)
+        left_join(labour, by = c("district","year")) %>%
+        select(2:6,9,10)
 crime_labour <- na.omit(crime_labour)
 ```
 
@@ -340,7 +340,7 @@ Remove any duplicates first
 
 ```{r}
 #| eval: false
-crime_labour <- crime_labour %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+#crime_labour <- crime_labour %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
 
 
 ```
@@ -349,7 +349,7 @@ crime_labour <- crime_labour %>% distinct(district, category,type,crimes,year,da
 #| eval: false
 crime_labour_iq <- crime_labour %>%
         left_join(income, by = c("district","year")) %>%
-        select(1:7,10,11,14)
+        select(1:7,9)
 ```
 
 #### Crime_labour_iq with household income
@@ -358,14 +358,14 @@ Remove any duplicates first
 
 ```{r}
 #| eval: false
-crime_labour_iq <- crime_labour_iq %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+#crime_labour_iq <- crime_labour_iq %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
 ```
 
 ```{r}
 #| eval: false
 crime_labour_iq_household <- crime_labour_iq %>%
         left_join(household, by = c("district","year")) %>%
-        select(1:10,13,14)
+        select(1:8,10,11)
 ```
 
 #### Crime_labour_iq with household poverty
@@ -374,21 +374,21 @@ Remove any duplicates first
 
 ```{r}
 #| eval: false
-crime_labour_iq_household <- crime_labour_iq_household %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+#crime_labour_iq_household <- crime_labour_iq_household %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
 ```
 
 ```{r}
 #| eval: false
 crime_labour_iq_household_poverty <- crime_labour_iq_household %>%
         left_join(poverty, by = c("district","year")) %>%
-        select(1:12,15,16)
+        select(1:10,12,13)
 ```
 
 Remove duplicates for the final one
 
 ```{r}
 #| eval: false
-crime_labour_iq_household_poverty <- crime_labour_iq_household_poverty %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
+#crime_labour_iq_household_poverty <- crime_labour_iq_household_poverty %>% distinct(district, category,type,crimes,year,date.x, .keep_all = TRUE)
 ```
 
 #### Left Join with Malaysia sf
@@ -396,8 +396,9 @@ crime_labour_iq_household_poverty <- crime_labour_iq_household_poverty %>% disti
 ```{r}
 #| eval: false
 msia <- left_join(msia_sf,crime_labour_iq_household_poverty, by = c("ADM2_EN" = "district")) %>%
-        select(1,6,16:28)
+        select(1,13:26)
 ```
+
 
 ## Combining Crime Type
 
@@ -415,6 +416,7 @@ msia <- msia %>%
     values_fn = mean  # Calculate the mean of duplicate values
   )
 ```
+
 
 ```{r}
 #| eval: false
@@ -435,9 +437,68 @@ msia <- msia %>%
   select(-"NA-NA")
 ```
 
+
+
 Remove NA values for the year
 
 ```{r}
 #| eval: false
 msia <- msia[!is.na(msia$year), ]
+```
+
+```{r}
+#| eval: false
+#| echo: false
+write_rds(msia, "data/rds/test.rds")
+```
+
+## GWR
+
+The GWR dataset requires a different format then the other datasets.
+
+### Left Join
+
+```{r}
+#| eval: false
+msia_gwr <- crime_labour_iq_household_poverty %>%
+  left_join(msia_sf, by = c("district" = "ADM2_EN"))%>%
+        dplyr::select(1:12,24:26)
+```
+
+### Combining Crime Type
+
+```{r}
+#| eval: false
+msia_gwr <- msia_gwr %>%
+  mutate(cat_type = paste(category, type, sep = "-")) %>%
+  dplyr::select(-category, -type) %>%
+  pivot_wider(
+    names_from = cat_type,
+    values_from = crimes,
+    values_fill = 0.0,
+    values_fn = mean  # Calculate the mean of duplicate values
+  )
+```
+
+```{r}
+#| eval: false
+msia_gwr <- msia_gwr %>%
+  mutate(
+    robbery = `assault-robbery_gang_armed` + `assault-robbery_gang_unarmed` + 
+              `assault-robbery_solo_armed` + `assault-robbery_solo_unarmed`,
+    vehicle_theft = `property-theft_vehicle_lorry` + `property-theft_vehicle_motorcar` + 
+                    `property-theft_vehicle_motorcycle`
+  ) %>%
+  dplyr::select(-`assault-robbery_gang_armed`, -`assault-robbery_gang_unarmed`, 
+         -`assault-robbery_solo_armed`, -`assault-robbery_solo_unarmed`,
+         -`property-theft_vehicle_lorry`, -`property-theft_vehicle_motorcar`, 
+         -`property-theft_vehicle_motorcycle`) %>%
+  rename_with(~str_remove(., "^assault-|^property-"))
+
+```
+
+```{r}
+#| eval: false
+#| echo: false
+write_rds(msia_gwr, "data/rds/gwr.rds")
 ```
