@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "IS415-Project"
+  title: "Abang Smith"
   navbar:
     left:
       - href: index.qmd

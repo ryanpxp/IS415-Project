@@ -1,5 +1,5 @@
 ---
-title: "IS415-Project:Project Proposal: Geospatial Analysis of Income Inequality and School Completion Rates in Malaysia"
+title: "Geospatial Analysis of Crimes in Malaysia Against Socio-economic Factors"
 author: "Team: Abang Smith"
 ---
 
