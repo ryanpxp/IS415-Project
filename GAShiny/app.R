@@ -1,8 +1,6 @@
-library(Kendall)
-library(rmapshaper)
-pacman::p_load(shiny, shinyjs, sf, tmap, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
+pacman::p_load(shiny, shinyjs, sf, tmap,rmapshaper,Kendall, tidyverse, sfdep,shinycssloaders, shinydashboard, shinythemes, bslib,
              st, tidyverse, raster, tmaptools, ggplot2, spatstat,knitr,performance, see, GWmodel,olsrr, ggstatsplot)
-msia <- read_rds("data/rds/test.rds")
+msia <- read_rds("data/rds/msia.rds")
 msia_sf <- read_sf(dsn = "data/geospatial/mys_adm_unhcr_20210211_shp", 
                    layer = "mys_admbnda_adm2_unhcr_20210211") %>%
   st_as_sf(coords =c(
@@ -424,10 +422,10 @@ server <- function(input, output, session){
                                "Poverty Absolute" = "poverty_absolute",
                                "Poverty Relative" = "poverty_relative",
                                "Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate")
+                               "Unemployment rate" = "unemployment_rate")
     } else {
       unique_relationship <- c("Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate")
+                               "Unemployment rate" = "unemployment_rate")
     }
     unique_relationship
     
@@ -443,7 +441,7 @@ server <- function(input, output, session){
                                "Poverty Absolute" = "poverty_absolute",
                                "Poverty Relative" = "poverty_relative",
                                "Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate",
+                               "Unemployment rate" = "unemployment_rate",
                                "Causing Injury" = "causing_injury",
                                "Murder" = "murder",
                                "Rape" = "rape",
@@ -453,7 +451,7 @@ server <- function(input, output, session){
                                "Vehicle Theft" = "vehicle_theft")
     } else {
       unique_relationship <- c("Participation rate" = "p_rate",
-                               "Unemployment rate" = "u_rate",
+                               "Unemployment rate" = "unemployment_rate",
                                "Causing Injury" = "causing_injury",
                                "Murder" = "murder",
                                "Rape" = "rape",
@@ -483,9 +481,9 @@ server <- function(input, output, session){
                                "Income Median" = "income_median",
                                "Poverty Absolute" = "poverty_absolute",
                                "Poverty Relative" = "poverty_relative",
-                               "Unemployment rate" = "u_rate")
+                               "Unemployment rate" = "unemployment_rate")
     } else {
-      unique_relationship <- c("Unemployment rate" = "u_rate")
+      unique_relationship <- c("Unemployment rate" = "unemployment_rate")
     }
     unique_relationship
     
@@ -644,7 +642,7 @@ server <- function(input, output, session){
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
     histogram <- {
-      ggplot(data = df, aes_string(x = input$EDAVariable)) +
+      ggplot(data = df, aes(x = .data[[input$EDAVariable]])) +
         geom_histogram(bins = 20, color = "black", fill = "light blue")
     }
     histogram
@@ -656,7 +654,7 @@ server <- function(input, output, session){
     if(is.null(df) || nrow(df) == 0) return()  # Exit if no data
     
     boxplot <- {
-      ggplot(data = df, aes_string(x = input$EDAVariable)) +
+      ggplot(data = df, aes(x = .data[[input$EDAVariable]])) +
         geom_boxplot(color = "black", fill = "light blue")
     }
     boxplot
