@@ -19,6 +19,6 @@ The Shiny application comprises of three pages:
 
 -   **Explanatory Data Analysis (EDA)**: Allows to generate histogram, box-plot, choropleth maps and LISA map consisting of socio-economic factors.
 
--   **Geographically Weighted Regression**:
+-   **Geographically Weighted Regression**: Allows user to perform Correlation analysis, regression model comparison, assumption checks, plot geographically weighted regression and measure the coefficient estimates.
 
 -   **Global and Local Spatial Autocorrelation**: Allows user to perform Global and Local Moran on the dataset, and plot maps to visualise it. Also allowing users to perform emerging hot spot analysis
